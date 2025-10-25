@@ -70,14 +70,19 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Importar funciones
-from utils.data_loader import load_or_generate_data, filter_data, get_date_range_preset
+from utils.data_loader_pg import load_or_generate_data, filter_data, get_date_range_preset
 
-# Cargar datos
+# Cargar datos desde PostgreSQL
 @st.cache_resource
 def load_data():
     return load_or_generate_data()
 
 transactions_df, customers_df, products_df = load_data()
+
+# Verificar que los datos se cargaron correctamente
+if transactions_df is None or customers_df is None or products_df is None:
+    st.error("❌ Error cargando datos. Por favor recarga la página.")
+    st.stop()
 
 # Header
 st.markdown('<div class="main-header">🌍 Global Ecommerce Analytics Platform</div>', unsafe_allow_html=True)
@@ -143,6 +148,44 @@ filtered_df = filter_data(transactions_df, filters)
 st.sidebar.markdown("---")
 st.sidebar.info(f"📅 Última actualización: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
 st.sidebar.success(f"📊 {len(filtered_df):,} transacciones seleccionadas")
+
+# Botones de exportación
+st.sidebar.markdown("---")
+st.sidebar.subheader("📥 Exportar Reportes")
+
+# Parámetros para exportación
+export_params = {
+    'start_date': start_date.strftime('%Y-%m-%d') if isinstance(start_date, datetime) else start_date,
+    'end_date': end_date.strftime('%Y-%m-%d') if isinstance(end_date, datetime) else end_date
+}
+
+if selected_countries:
+    export_params['country'] = selected_countries[0]  # API toma un país
+if selected_categories:
+    export_params['category'] = selected_categories[0]  # API toma una categoría
+
+# Enlaces de descarga
+api_base = "http://localhost:8000"
+
+excel_url = f"{api_base}/api/export/excel"
+pdf_url = f"{api_base}/api/export/pdf"
+
+if len(export_params) > 2:
+    param_str = "&".join([f"{k}={v}" for k, v in export_params.items()])
+    excel_url += f"?{param_str}"
+    pdf_url += f"?{param_str}"
+
+st.sidebar.markdown(f"[📊 Descargar Excel]({excel_url})")
+st.sidebar.markdown(f"[📄 Descargar PDF]({pdf_url})")
+
+# Botón alternativo con CSV directo
+csv_data = filtered_df.to_csv(index=False).encode('utf-8')
+st.sidebar.download_button(
+    label="💾 Descargar CSV",
+    data=csv_data,
+    file_name=f'transactions_{datetime.now().strftime("%Y%m%d")}.csv',
+    mime='text/csv',
+)
 
 # KPIs Principales
 st.markdown('<div class="section-header">📈 KPIs Principales</div>', unsafe_allow_html=True)
