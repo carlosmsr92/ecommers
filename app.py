@@ -623,7 +623,19 @@ with tab_forecasting:
                 modelo.add_seasonality(name='monthly', period=30.5, fourier_order=5)
                 modelo.fit(prophet_df, algorithm='LBFGS')
                 
-                futuro = modelo.make_future_dataframe(periods=90)
+                # Mapear granularidad a frecuencia y períodos para mantener ~90 días de proyección
+                import math
+                if granularidad == 'Día':
+                    freq = 'D'
+                    periods = 90
+                elif granularidad == 'Semana':
+                    freq = 'W-MON'  # Semana que empieza en lunes
+                    periods = math.ceil(90 / 7)  # ~13 semanas
+                else:  # Mes
+                    freq = 'MS'  # Inicio de mes
+                    periods = math.ceil(90 / 30)  # ~3 meses
+                
+                futuro = modelo.make_future_dataframe(periods=periods, freq=freq)
                 forecast = modelo.predict(futuro)
             
             col1, col2 = st.columns([7, 3])
