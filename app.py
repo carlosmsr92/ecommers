@@ -868,7 +868,7 @@ with tab_clientes:
             title='Proporción de Segmentos',
             hole=0.4
         )
-        fig_rfm_pie.update_traces(hovertemplate='<b>%{label}</b><br>Clientes: %{value:,}<br>Porcentaje: %{percent}<extra></extra>')
+        fig_rfm_pie.update_traces(textposition='inside', textinfo='percent+label')
         fig_rfm_pie.update_layout(height=400)
         st.plotly_chart(fig_rfm_pie, use_container_width=True)
     
@@ -1101,7 +1101,7 @@ with tab_clientes:
             color='riesgo',
             color_discrete_map={'Alto (>70%)': '#EF4444', 'Medio (40-70%)': '#F59E0B', 'Bajo (<40%)': '#10B981'}
         )
-        fig_churn_pie.update_traces(hovertemplate='<b>%{label}</b><br>Clientes: %{value:,}<br>Porcentaje: %{percent}<extra></extra>')
+        fig_churn_pie.update_traces(textposition='inside', textinfo='percent+label')
         fig_churn_pie.update_layout(height=400)
         st.plotly_chart(fig_churn_pie, use_container_width=True)
     
@@ -1151,7 +1151,7 @@ with tab_canal:
             title='Distribución de Ingresos por Dispositivo',
             hole=0.4
         )
-        fig_dispositivos.update_traces(hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<br>Porcentaje: %{percent}<extra></extra>')
+        fig_dispositivos.update_traces(textposition='inside', textinfo='percent+label')
         fig_dispositivos.update_layout(height=400)
         st.plotly_chart(fig_dispositivos, use_container_width=True)
     

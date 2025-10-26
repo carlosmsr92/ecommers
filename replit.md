@@ -48,6 +48,20 @@ This project delivers a professional Business Intelligence dashboard for global 
 - ✅ **Translation Architecture:** Single-pass translation at data load ensures consistency across all tabs, filters, and visualizations without performance impact
 - ✅ **Case-Insensitive Matching:** Robust traducir_categoria() function handles capitalization variations (electronics/Electronics/ELECTRONICS → Electrónica)
 
+**Dashboard v2.3 - Complete Geographic & Temporal Internationalization (October 26, 2025):**
+- ✅ **Country Translation System:** Extended PAISES_TRADUCCION dictionary in utils/traducciones.py with 100+ country mappings (United States→Estados Unidos, United Kingdom→Reino Unido, etc.)
+- ✅ **Weekday Translation System:** Added DIAS_SEMANA_ES dictionary mapping English weekdays to Spanish (Monday→Lunes, Tuesday→Martes, etc.)
+- ✅ **Automatic Geographic Translation:** Countries translated at data load time via aplicar_traducciones_paises_df() ensuring all geographic visualizations display Spanish names
+- ✅ **All Charts Updated:** 25+ charts now have professional Spanish hovertemplates with formatted currency ($1,234,567), percentages (12.3%), and thousands separators
+- ✅ **Enhanced Chart Tooltips:** Every visualization updated with custom hovertemplate for consistent professional presentation:
+  - Geographic charts: "País: Estados Unidos, Ingresos: $12,345,678"
+  - Product charts: "Producto: Widget ABC, Ventas: 1,234 unidades"
+  - Temporal charts: "Fecha: 2024-01, Beneficio: $567,890"
+  - Customer charts: "Segmento: Campeones, Clientes: 2,345 (23.5%)"
+- ✅ **Weekday Charts in Spanish:** Operational tab now displays weekdays in Spanish (Lunes, Martes, Miércoles, etc.) with proper ordering
+- ✅ **Data Quality Issue Identified:** Documented 9-month gap in dataset (Jan-Sep 2023) caused by synthetic data generation failure - requires data regeneration script update
+- ✅ **Translation Functions:** Centralized traducir_pais() and traducir_dia_semana() functions with case-insensitive matching and fallback to original value
+
 ## User Preferences
 I prefer detailed explanations. Do not make changes to the folder Z. Do not make changes to the file Y.
 
