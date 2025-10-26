@@ -821,6 +821,29 @@ with tab_productos:
     fig_productos.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_productos, use_container_width=True)
     
+    st.subheader("Top 15 Productos Más Comprados")
+    
+    top_comprados = datos_productos_reales.groupby(['product_id', 'product_name', 'category']).agg({
+        'quantity': 'sum',
+        'transaction_id': 'count',
+        'total_amount_usd': 'sum'
+    }).reset_index().nlargest(15, 'quantity')
+    
+    fig_comprados = px.bar(
+        top_comprados,
+        x='quantity',
+        y='product_name',
+        orientation='h',
+        title='Top 15 Productos por Unidades Vendidas (excl. envíos)',
+        labels=LABELS,
+        color='category',
+        color_discrete_sequence=px.colors.qualitative.Set2,
+        custom_data=['category', 'transaction_id']
+    )
+    fig_comprados.update_traces(hovertemplate='<b>%{y}</b><br>Categoría: %{customdata[0]}<br>Unidades: %{x:,.0f}<br>Transacciones: %{customdata[1]:,.0f}<extra></extra>')
+    fig_comprados.update_layout(height=450, yaxis={'categoryorder': 'total ascending'})
+    st.plotly_chart(fig_comprados, use_container_width=True)
+    
     col1, col2 = st.columns(2)
     
     with col1:
