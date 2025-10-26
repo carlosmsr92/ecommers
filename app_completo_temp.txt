@@ -1,0 +1,2 @@
+# Aquí iré construyendo el app.py completo con todas las pestañas
+# Este es un archivo temporal de trabajo
