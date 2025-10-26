@@ -142,3 +142,35 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
   - All visualizations functioning correctly
   - Data coherence verified
   - Ready for GitHub upload and Streamlit Cloud deployment
+
+**Dashboard v3.6 - Prophet Forecasting Fix (October 26, 2025):**
+
+- ✅ **Prophet Timestamp Error RESOLVED (FINAL):**
+  - **PROBLEM:** "Addition/subtraction of integers and integer-arrays with Timestamp is no longer supported. Instead of adding/subtracting n, use n * obj.freq"
+  - **ROOT CAUSE:** Prophet's `make_future_dataframe()` required explicit frequency specification for different granularities
+  - **SOLUTION:** Implemented granularity-specific frequency mapping that maintains ~90 day forecast window
+  
+- ✅ **Frequency Mapping Implementation:**
+  - **Día:** 90 periods × freq='D' = 90 days
+  - **Semana:** 13 periods × freq='W-MON' = ~91 days (Monday-start weeks)
+  - **Mes:** 3 periods × freq='MS' = ~90 days (Month-start)
+  - Code location: app.py lines 629-642
+  - Uses `math.ceil()` for period calculations to ensure complete coverage
+  
+- ✅ **Technical Improvements:**
+  - Explicit frequencies (D, W-MON, MS) align with historical data aggregation
+  - Preserves UI contract: "forecasting 90 days" regardless of granularity
+  - Prevents datetime alignment errors across all three time scales
+  
+- ✅ **Validation:**
+  - Prophet executing successfully across all granularities (cmdstanpy logs confirm)
+  - No Timestamp errors in production
+  - Forecast plots rendering correctly with expected horizon length
+  - Architect review: PASS
+
+**Technical Quality:**
+- ✅ Dashboard running without errors
+- ✅ Prophet forecasting stable across all granularities (Día/Semana/Mes)
+- ✅ Zero Timestamp errors
+- ✅ Client/executive-ready presentation
+- ✅ Only pre-existing Plotly country names notice (non-blocking)
