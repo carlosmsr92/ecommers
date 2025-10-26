@@ -61,10 +61,10 @@ if len(datos_filtrados) == 0:
     st.warning("⚠️ No hay datos que coincidan con los filtros seleccionados. Ajusta los criterios de búsqueda.")
     st.stop()
 
-tab_overview, tab_geografia, tab_forecasting, tab_productos, tab_clientes, tab_canal, tab_ml, tab_finanzas, tab_operacional = st.tabs([
+tab_overview, tab_geografia, tab_rendimiento, tab_productos, tab_clientes, tab_canal, tab_ml, tab_finanzas, tab_operacional = st.tabs([
     "🏠 Resumen General",
     "🌍 Análisis Geográfico",
-    "📈 Forecasting & Tendencias",
+    "📈 Rendimiento & Análisis Temporal",
     "📦 Análisis de Productos",
     "👥 Segmentación de Clientes",
     "📱 Análisis de Canal",
@@ -111,10 +111,13 @@ with tab_overview:
     margen_promedio = (beneficio_total / ingresos_totales * 100) if ingresos_totales > 0 else 0
     
     fecha_inicio_comparacion = filtros['fecha_inicio'] - (filtros['fecha_fin'] - filtros['fecha_inicio'])
-    datos_periodo_anterior = transacciones_df[
-        (transacciones_df['date'] >= pd.Timestamp(fecha_inicio_comparacion)) & 
-        (transacciones_df['date'] < pd.Timestamp(filtros['fecha_inicio']))
-    ]
+    
+    # Aplicar LOS MISMOS filtros al período anterior (excepto fechas) para comparación válida
+    filtros_periodo_anterior_overview = filtros.copy()
+    filtros_periodo_anterior_overview['fecha_inicio'] = fecha_inicio_comparacion
+    filtros_periodo_anterior_overview['fecha_fin'] = filtros['fecha_inicio'] - pd.Timedelta(days=1)
+    
+    datos_periodo_anterior = aplicar_filtros(transacciones_df, filtros_periodo_anterior_overview)
     
     ingresos_anteriores = datos_periodo_anterior['total_amount_usd'].sum()
     cambio_ingresos = ((ingresos_totales - ingresos_anteriores) / ingresos_anteriores * 100) if ingresos_anteriores > 0 else 0
@@ -538,15 +541,15 @@ with tab_geografia:
         fig_pie.update_layout(height=400)
         st.plotly_chart(fig_pie, use_container_width=True)
 
-with tab_forecasting:
+with tab_rendimiento:
     crear_descripcion_seccion(
-        "Predicción de Ventas Futuras con Machine Learning",
-        "Utiliza el modelo Prophet de Meta (Facebook) para predecir tus ventas de los próximos 90 días. "
-        "Las bandas de confianza muestran el rango probable de variación. Esta información te ayuda a planificar "
-        "inventario, presupuestos y recursos operativos con anticipación."
+        "Análisis de Rendimiento y Tendencias Temporales",
+        "Analiza la evolución de tus ventas a lo largo del tiempo, identifica patrones de crecimiento y estacionalidad. "
+        "Compara períodos, detecta tendencias y toma decisiones basadas en el comportamiento histórico de tu negocio. "
+        "Los indicadores de crecimiento te ayudan a planificar estrategias, ajustar inventario y optimizar recursos."
     )
     
-    crear_seccion_titulo("Forecasting y Análisis de Tendencias")
+    crear_seccion_titulo("Análisis Temporal de Rendimiento")
     
     st.subheader("Ingresos y Pedidos a lo Largo del Tiempo")
     
@@ -591,181 +594,170 @@ with tab_forecasting:
     
     st.plotly_chart(fig_tiempo, use_container_width=True)
     
-    if filtros.get('mostrar_ml') and len(serie_temporal) > 10:
-        st.subheader("🔮 Forecasting 90 Días (Prophet)")
+    #Análisis de Crecimiento y Momentum
+    st.markdown("<br>", unsafe_allow_html=True)
+    crear_seccion_titulo("Indicadores de Crecimiento")
+    
+    # Calcular períodos para comparación
+    datos_actuales = datos_filtrados.copy()
+    fecha_fin_actual = datos_actuales['date'].max()
+    fecha_inicio_actual = datos_actuales['date'].min()
+    duracion_dias = (fecha_fin_actual - fecha_inicio_actual).days
+    
+    # Período anterior (mismo número de días hacia atrás)
+    fecha_fin_anterior = fecha_inicio_actual - pd.Timedelta(days=1)
+    fecha_inicio_anterior = fecha_fin_anterior - pd.Timedelta(days=duracion_dias)
+    
+    # Aplicar LOS MISMOS filtros al período anterior (excepto fechas)
+    filtros_periodo_anterior = filtros.copy()
+    filtros_periodo_anterior['fecha_inicio'] = fecha_inicio_anterior
+    filtros_periodo_anterior['fecha_fin'] = fecha_fin_anterior
+    
+    datos_periodo_anterior = aplicar_filtros(transacciones_df, filtros_periodo_anterior)
+    
+    # Métricas de comparación
+    ingresos_actual = datos_actuales['total_amount_usd'].sum()
+    ingresos_anterior = datos_periodo_anterior['total_amount_usd'].sum()
+    
+    pedidos_actual = len(datos_actuales)
+    pedidos_anterior = len(datos_periodo_anterior)
+    
+    # Calcular variaciones
+    var_ingresos = ((ingresos_actual - ingresos_anterior) / ingresos_anterior * 100) if ingresos_anterior > 0 else 0
+    var_pedidos = ((pedidos_actual - pedidos_anterior) / pedidos_anterior * 100) if pedidos_anterior > 0 else 0
+    
+    # KPIs de crecimiento
+    col_crec1, col_crec2, col_crec3, col_crec4 = st.columns(4)
+    
+    with col_crec1:
+        st.metric(
+            "Variación vs Período Anterior",
+            f"{var_ingresos:+.1f}%",
+            delta=f"${ingresos_actual - ingresos_anterior:,.0f}"
+        )
+    
+    with col_crec2:
+        st.metric(
+            "Crecimiento en Pedidos",
+            f"{var_pedidos:+.1f}%",
+            delta=f"{pedidos_actual - pedidos_anterior:,} pedidos"
+        )
+    
+    with col_crec3:
+        # Tasa de crecimiento promedio diaria
+        if duracion_dias > 0:
+            crecimiento_diario = var_ingresos / duracion_dias
+            st.metric(
+                "Tasa Diaria Promedio",
+                f"{crecimiento_diario:+.2f}%/día"
+            )
+        else:
+            st.metric("Tasa Diaria Promedio", "N/A")
+    
+    with col_crec4:
+        # Momentum (aceleración)
+        if var_ingresos > 10:
+            momentum = "Acelerado ⬆️"
+            momentum_color = "green"
+        elif var_ingresos < -10:
+            momentum = "Desacelerado ⬇️"
+            momentum_color = "red"
+        else:
+            momentum = "Estable ➡️"
+            momentum_color = "gray"
         
-        st.info(
-            "📊 **¿Qué proyecta este modelo?** Este gráfico muestra la predicción de **INGRESOS TOTALES** de tu negocio "
-            f"para los próximos 90 días, agregados por **{granularidad.lower()}**. "
-            "La línea verde es la predicción basada en patrones históricos, y la banda sombreada muestra el rango de confianza del 95%. "
-            "El modelo detecta automáticamente tendencias, estacionalidad semanal, mensual y anual en tus ventas."
+        st.metric("Momentum", momentum)
+    
+    # Análisis de Tendencias con Promedio Móvil
+    if len(serie_temporal) > 7:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.subheader("📊 Análisis de Tendencias (Promedio Móvil)")
+        
+        # Calcular promedio móvil según granularidad
+        if granularidad == 'Día':
+            ventana_corta = 7
+            ventana_larga = 30
+            label_corta = "7 días"
+            label_larga = "30 días"
+        elif granularidad == 'Semana':
+            ventana_corta = 4
+            ventana_larga = 12
+            label_corta = "4 semanas"
+            label_larga = "12 semanas"
+        else:  # Mes
+            ventana_corta = 3
+            ventana_larga = 6
+            label_corta = "3 meses"
+            label_larga = "6 meses"
+        
+        serie_temporal_sorted = serie_temporal.sort_values('periodo').copy()
+        
+        if len(serie_temporal_sorted) >= ventana_corta:
+            serie_temporal_sorted[f'ma_{ventana_corta}'] = serie_temporal_sorted['ingresos'].rolling(window=ventana_corta, min_periods=1).mean()
+        
+        if len(serie_temporal_sorted) >= ventana_larga:
+            serie_temporal_sorted[f'ma_{ventana_larga}'] = serie_temporal_sorted['ingresos'].rolling(window=ventana_larga, min_periods=1).mean()
+        
+        fig_tendencias = go.Figure()
+        
+        # Datos reales
+        fig_tendencias.add_trace(go.Scatter(
+            x=serie_temporal_sorted['periodo'],
+            y=serie_temporal_sorted['ingresos'],
+            mode='lines+markers',
+            name='Ingresos Reales',
+            line=dict(color='rgba(102, 126, 234, 0.4)', width=1),
+            marker=dict(size=4, color='#667eea')
+        ))
+        
+        # Promedio móvil corto
+        if f'ma_{ventana_corta}' in serie_temporal_sorted.columns:
+            fig_tendencias.add_trace(go.Scatter(
+                x=serie_temporal_sorted['periodo'],
+                y=serie_temporal_sorted[f'ma_{ventana_corta}'],
+                mode='lines',
+                name=f'Tendencia {label_corta}',
+                line=dict(color='#10B981', width=3)
+            ))
+        
+        # Promedio móvil largo
+        if f'ma_{ventana_larga}' in serie_temporal_sorted.columns:
+            fig_tendencias.add_trace(go.Scatter(
+                x=serie_temporal_sorted['periodo'],
+                y=serie_temporal_sorted[f'ma_{ventana_larga}'],
+                mode='lines',
+                name=f'Tendencia {label_larga}',
+                line=dict(color='#F59E0B', width=2, dash='dash')
+            ))
+        
+        fig_tendencias.update_layout(
+            title=f'Tendencias de Ingresos con Promedio Móvil ({granularidad})',
+            xaxis_title='Fecha',
+            yaxis_title='Ingresos (USD)',
+            height=450,
+            hovermode='x unified',
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
         )
         
-        try:
-            from prophet import Prophet
-            import math
+        st.plotly_chart(fig_tendencias, use_container_width=True)
+        
+        # Insights automáticos de tendencias
+        if f'ma_{ventana_corta}' in serie_temporal_sorted.columns and f'ma_{ventana_larga}' in serie_temporal_sorted.columns:
+            ultima_corta = serie_temporal_sorted[f'ma_{ventana_corta}'].iloc[-1]
+            ultima_larga = serie_temporal_sorted[f'ma_{ventana_larga}'].iloc[-1]
             
-            # Mapear granularidad a frecuencia PRIMERO
-            if granularidad == 'Día':
-                freq = 'D'
-                periods = 90
-            elif granularidad == 'Semana':
-                freq = 'W-MON'  # Semana que empieza en lunes
-                periods = math.ceil(90 / 7)  # ~13 semanas
-            else:  # Mes
-                freq = 'MS'  # Inicio de mes
-                periods = math.ceil(90 / 30)  # ~3 meses
-            
-            prophet_df = serie_temporal[['periodo', 'ingresos']].copy()
-            prophet_df.columns = ['ds', 'y']
-            # Asegurar conversión correcta a datetime (convierte a string primero para limpiar tipos)
-            prophet_df['ds'] = pd.to_datetime(prophet_df['ds'].astype(str))
-            # Ordenar cronológicamente
-            prophet_df = prophet_df.sort_values('ds').reset_index(drop=True)
-            
-            with st.spinner('Entrenando modelo Prophet...'):
-                modelo = Prophet(
-                    daily_seasonality=False,
-                    weekly_seasonality=True,
-                    yearly_seasonality=True,
-                    seasonality_mode='multiplicative',
-                    changepoint_prior_scale=0.05,
-                    seasonality_prior_scale=10,
-                    interval_width=0.95
-                )
-                # Agregar estacionalidad mensual
-                modelo.add_seasonality(name='monthly', period=30.5, fourier_order=5)
-                modelo.fit(prophet_df, algorithm='LBFGS')
-                
-                # Crear DataFrame futuro MANUALMENTE para evitar problemas con frecuencias
-                # Asegurar que las fechas futuras estén alineadas con la frecuencia correcta
-                ultima_fecha = prophet_df['ds'].max()
-                if granularidad == 'Día':
-                    # Para días, simplemente sumamos 1 día y generamos secuencia diaria
-                    start_futuro = ultima_fecha + pd.Timedelta(days=1)
-                    fechas_futuras = pd.date_range(start=start_futuro, periods=periods, freq='D')
-                elif granularidad == 'Semana':
-                    # Para semanas, usar pd.date_range que automáticamente alinea a lunes
-                    # Generamos desde la próxima semana después de ultima_fecha
-                    fechas_futuras = pd.date_range(start=ultima_fecha, periods=periods+1, freq='W-MON')[1:]  # Excluir primera (última histórica)
-                else:  # Mes
-                    # Para meses, usar pd.date_range que automáticamente alinea a inicio de mes
-                    # Generamos desde el próximo mes después de ultima_fecha
-                    fechas_futuras = pd.date_range(start=ultima_fecha, periods=periods+1, freq='MS')[1:]  # Excluir primera (última histórica)
-                
-                futuro_df = pd.DataFrame({'ds': fechas_futuras})
-                futuro = pd.concat([prophet_df[['ds']], futuro_df], ignore_index=True)
-                forecast = modelo.predict(futuro)
-            
-            col1, col2 = st.columns([7, 3])
-            
-            with col1:
-                fig_forecast = go.Figure()
-                
-                # Separar datos históricos y proyección
-                ultima_fecha_historica = prophet_df['ds'].max()
-                forecast_futuro = forecast[forecast['ds'] > ultima_fecha_historica]
-                forecast_historico = forecast[forecast['ds'] <= ultima_fecha_historica]
-                
-                # Datos históricos (puntos azules)
-                fig_forecast.add_trace(go.Scatter(
-                    x=prophet_df['ds'],
-                    y=prophet_df['y'],
-                    mode='markers',
-                    name='Datos Históricos',
-                    marker=dict(color='#667eea', size=8, opacity=0.6),
-                    hovertemplate='<b>Histórico</b><br>Fecha: %{x}<br>Ingresos: $%{y:,.0f}<extra></extra>'
-                ))
-                
-                # Línea de ajuste histórico (gris claro)
-                fig_forecast.add_trace(go.Scatter(
-                    x=forecast_historico['ds'],
-                    y=forecast_historico['yhat'],
-                    mode='lines',
-                    name='Ajuste Histórico',
-                    line=dict(color='rgba(100, 100, 100, 0.3)', width=2, dash='dot'),
-                    showlegend=True
-                ))
-                
-                # PROYECCIÓN FUTURA (verde brillante)
-                fig_forecast.add_trace(go.Scatter(
-                    x=forecast_futuro['ds'],
-                    y=forecast_futuro['yhat'],
-                    mode='lines+markers',
-                    name='Proyección (90 días)',
-                    line=dict(color='#10B981', width=4),
-                    marker=dict(size=6),
-                    hovertemplate='<b>Proyección</b><br>Fecha: %{x}<br>Ingresos: $%{y:,.0f}<extra></extra>'
-                ))
-                
-                # Banda de confianza SOLO para proyección futura
-                fig_forecast.add_trace(go.Scatter(
-                    x=forecast_futuro['ds'],
-                    y=forecast_futuro['yhat_upper'],
-                    fill=None,
-                    mode='lines',
-                    line_color='rgba(16, 185, 129, 0)',
-                    showlegend=False,
-                    hoverinfo='skip'
-                ))
-                
-                fig_forecast.add_trace(go.Scatter(
-                    x=forecast_futuro['ds'],
-                    y=forecast_futuro['yhat_lower'],
-                    fill='tonexty',
-                    mode='lines',
-                    line_color='rgba(16, 185, 129, 0)',
-                    fillcolor='rgba(16, 185, 129, 0.2)',
-                    name='Intervalo Confianza 95%',
-                    hovertemplate='<b>Intervalo de Confianza</b><br>Superior: %{y:,.0f}<extra></extra>'
-                ))
-                
-                # Línea vertical separando histórico de proyección
-                fig_forecast.add_vline(
-                    x=ultima_fecha_historica, 
-                    line_dash="dash", 
-                    line_color="orange",
-                    line_width=2,
-                    annotation_text="← Histórico | Proyección →",
-                    annotation_position="top"
-                )
-                
-                fig_forecast.update_layout(
-                    title='Predicción de Ingresos: Histórico vs Proyección (90 días)',
-                    xaxis_title='Fecha',
-                    yaxis_title='Ingresos (USD)',
-                    height=500,
-                    hovermode='x unified',
-                    legend=dict(
-                        orientation="h",
-                        yanchor="bottom",
-                        y=1.02,
-                        xanchor="right",
-                        x=1
-                    )
-                )
-                st.plotly_chart(fig_forecast, use_container_width=True)
-            
-            with col2:
-                ingresos_predichos = forecast[forecast['ds'] > prophet_df['ds'].max()]['yhat'].sum()
-                st.metric("Ingresos Predichos (90 días)", f"${ingresos_predichos:,.0f}")
-                
-                y_actual = prophet_df['y'].values
-                y_pred = forecast.iloc[:len(prophet_df)]['yhat'].values
-                mask = y_actual != 0
-                if mask.sum() > 0:
-                    mape = np.mean(np.abs((y_actual[mask] - y_pred[mask]) / y_actual[mask])) * 100
-                    st.metric("MAPE (Error %)", f"{mape:.2f}%")
-                else:
-                    st.metric("MAPE (Error %)", "N/A")
-                
-                st.markdown("**Componentes del Modelo:**")
-                st.write(f"- Tendencia detectada")
-                st.write(f"- Estacionalidad anual")
-                st.write(f"- Estacionalidad semanal")
-                
-        except Exception as e:
-            st.warning(f"No se pudo generar forecast: {str(e)}")
+            if ultima_corta > ultima_larga * 1.05:
+                st.success(f"✅ **Tendencia Positiva:** La tendencia de {label_corta} está {((ultima_corta/ultima_larga - 1) * 100):.1f}% por encima de la tendencia de {label_larga}, indicando aceleración en el crecimiento.")
+            elif ultima_corta < ultima_larga * 0.95:
+                st.warning(f"⚠️ **Alerta de Desaceleración:** La tendencia de {label_corta} está {((1 - ultima_corta/ultima_larga) * 100):.1f}% por debajo de la tendencia de {label_larga}, sugiriendo una desaceleración reciente.")
+            else:
+                st.info(f"ℹ️ **Tendencia Estable:** Las tendencias de {label_corta} y {label_larga} están alineadas, indicando un crecimiento constante y predecible.")
     
     col_dist1, col_dist2 = st.columns(2)
     
