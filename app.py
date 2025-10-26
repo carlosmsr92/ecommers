@@ -1609,45 +1609,63 @@ with tab_finanzas:
         
         fig_beneficio = go.Figure()
         
-        # Datos históricos
-        fig_beneficio.add_trace(go.Scatter(
-            x=beneficio_mensual['mes'],
-            y=beneficio_mensual['profit'],
-            mode='lines+markers',
-            name='Beneficio Real',
-            line=dict(color='#10B981', width=3),
-            hovertemplate='<b>%{x}</b><br>Beneficio: $%{y:,.0f}<extra></extra>'
-        ))
-        
-        # Línea de tendencia
+        # Línea de tendencia (fondo, más sutil)
         if mostrar_proyeccion:
             fig_beneficio.add_trace(go.Scatter(
                 x=beneficio_mensual['mes'],
                 y=beneficio_mensual['tendencia'],
                 mode='lines',
-                name='Tendencia',
+                name='Tendencia (promedio)',
                 line=dict(color='#667eea', width=2, dash='dash'),
-                hovertemplate='<b>%{x}</b><br>Tendencia: $%{y:,.0f}<extra></extra>'
+                hovertemplate='<b>%{x}</b><br>Tendencia: $%{y:,.0f}<extra></extra>',
+                opacity=0.6
             ))
+        
+        # Datos históricos (línea principal, más destacada)
+        fig_beneficio.add_trace(go.Scatter(
+            x=beneficio_mensual['mes'],
+            y=beneficio_mensual['profit'],
+            mode='lines+markers',
+            name='Beneficio Real (histórico)',
+            line=dict(color='#10B981', width=4),
+            marker=dict(size=8),
+            hovertemplate='<b>%{x}</b><br>Beneficio Real: $%{y:,.0f}<extra></extra>'
+        ))
+        
+        # Proyección futura (empieza donde termina el histórico)
+        if mostrar_proyeccion:
+            # Agregar punto de conexión (último mes histórico)
+            ultimo_valor_real = beneficio_mensual['profit'].iloc[-1]
+            ultimo_mes_real = beneficio_mensual['mes'].iloc[-1]
             
-            # Proyección futura
+            # Crear proyección que incluye punto de conexión
+            proyeccion_x = [ultimo_mes_real] + list(proyeccion_df['mes'])
+            proyeccion_y = [ultimo_valor_real] + list(proyeccion_df['proyeccion'])
+            
             fig_beneficio.add_trace(go.Scatter(
-                x=proyeccion_df['mes'],
-                y=proyeccion_df['proyeccion'],
+                x=proyeccion_x,
+                y=proyeccion_y,
                 mode='lines+markers',
                 name='Proyección (3 meses)',
-                line=dict(color='#F59E0B', width=2, dash='dot'),
-                marker=dict(symbol='diamond', size=8),
+                line=dict(color='#F59E0B', width=3, dash='dot'),
+                marker=dict(symbol='diamond', size=10),
                 hovertemplate='<b>%{x}</b><br>Proyección: $%{y:,.0f}<extra></extra>'
             ))
         
         fig_beneficio.update_layout(
-            title='Beneficio Mensual con Proyección',
+            title='Evolución del Beneficio: Histórico y Proyección',
             xaxis_title='Mes',
             yaxis_title='Beneficio (USD)',
-            height=400,
+            height=450,
             hovermode='x unified',
-            showlegend=True
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
         )
         st.plotly_chart(fig_beneficio, use_container_width=True)
     
