@@ -26,24 +26,14 @@ st.set_page_config(
 
 from utils.ui_components import (
     aplicar_estilos_globales, crear_header_principal, crear_tarjeta_kpi,
-    crear_seccion_titulo, crear_pie_pagina, mostrar_info_dataset
+    crear_seccion_titulo, crear_pie_pagina, mostrar_info_dataset,
+    crear_descripcion_seccion, crear_insight, crear_recomendaciones
 )
 from utils.filtros import crear_filtros_sidebar, aplicar_filtros
 from utils.data_loader_pg import load_or_generate_data
 
-# Toggle de modo claro/oscuro en el sidebar superior
-if 'modo_oscuro' not in st.session_state:
-    st.session_state.modo_oscuro = False
-
-with st.sidebar:
-    label_toggle = "☀️ Modo Claro" if st.session_state.modo_oscuro else "🌙 Modo Oscuro"
-    if st.checkbox(label_toggle, value=st.session_state.modo_oscuro, key='toggle_modo', help="Cambia entre modo claro y oscuro para mejor legibilidad"):
-        st.session_state.modo_oscuro = True
-    else:
-        st.session_state.modo_oscuro = False
-    st.markdown("---")
-
-aplicar_estilos_globales(modo_oscuro=st.session_state.modo_oscuro)
+# Aplicar estilos globales con detección automática de tema del navegador
+aplicar_estilos_globales()
 
 @st.cache_resource
 def cargar_datos():
@@ -80,6 +70,13 @@ tab_overview, tab_geografia, tab_forecasting, tab_productos, tab_clientes, tab_c
 ])
 
 with tab_overview:
+    crear_descripcion_seccion(
+        "Resumen Ejecutivo",
+        "Esta sección presenta una visión general del rendimiento del negocio. Los KPIs principales muestran la salud financiera, "
+        "el volumen de operaciones y la eficiencia comercial. Utiliza los filtros del sidebar para analizar períodos específicos, "
+        "regiones geográficas o segmentos de clientes."
+    )
+    
     crear_seccion_titulo("Indicadores Clave de Rendimiento (KPIs)")
     
     ingresos_totales = datos_filtrados['total_amount_usd'].sum()
@@ -269,6 +266,13 @@ with tab_overview:
         st.plotly_chart(fig_categorias, use_container_width=True)
 
 with tab_geografia:
+    crear_descripcion_seccion(
+        "Análisis de Distribución Geográfica",
+        "Visualiza cómo se distribuyen tus ventas alrededor del mundo. Identifica los mercados más rentables, "
+        "países con mayor potencial de crecimiento y oportunidades de expansión internacional. El mapa de calor "
+        "muestra la intensidad de ventas por país."
+    )
+    
     crear_seccion_titulo("Análisis Geográfico Global")
     
     col1, col2 = st.columns([7, 3])
@@ -370,6 +374,13 @@ with tab_geografia:
         st.plotly_chart(fig_pie, use_container_width=True)
 
 with tab_forecasting:
+    crear_descripcion_seccion(
+        "Predicción de Ventas Futuras con Machine Learning",
+        "Utiliza el modelo Prophet de Meta (Facebook) para predecir tus ventas de los próximos 90 días. "
+        "Las bandas de confianza muestran el rango probable de variación. Esta información te ayuda a planificar "
+        "inventario, presupuestos y recursos operativos con anticipación."
+    )
+    
     crear_seccion_titulo("Forecasting y Análisis de Tendencias")
     
     st.subheader("Ingresos y Pedidos a lo Largo del Tiempo")
@@ -546,6 +557,13 @@ with tab_forecasting:
         st.plotly_chart(fig_horas, use_container_width=True)
 
 with tab_productos:
+    crear_descripcion_seccion(
+        "Rendimiento y Estrategia de Productos",
+        "Analiza qué productos generan más ingresos, cuáles tienen mejor margen y cómo se distribuyen por categorías. "
+        "La Matriz BCG clasifica tus productos en Estrellas (alta venta, alto crecimiento), Vacas Lecheras (alta venta, bajo crecimiento), "
+        "Interrogantes (baja venta, alto potencial) y Perros (bajo rendimiento)."
+    )
+    
     crear_seccion_titulo("Análisis de Productos")
     
     st.subheader("Top 20 Productos por Ingresos")
@@ -675,6 +693,13 @@ with tab_productos:
             st.metric(cuadrante, f"{count} productos")
 
 with tab_clientes:
+    crear_descripcion_seccion(
+        "Conoce a Tus Clientes en Profundidad",
+        "Esta sección te permite entender quiénes son tus mejores clientes, cuáles están en riesgo de abandonar y cómo puedes "
+        "personalizar tu estrategia para cada segmento. El análisis RFM evalúa cuán recientemente compraron, con qué frecuencia "
+        "y cuánto gastan, clasificándolos en 11 segmentos desde Campeones hasta Perdidos."
+    )
+    
     crear_seccion_titulo("Segmentación de Clientes")
     
     st.subheader("Análisis RFM (Recencia, Frecuencia, Monetario)")
@@ -733,7 +758,14 @@ with tab_clientes:
     st.plotly_chart(fig_ltv_dist, use_container_width=True)
     
     if filtros.get('mostrar_ml') and len(datos_filtrados) > 100:
-        st.subheader("🤖 Clustering de Clientes (K-Means)")
+        crear_seccion_titulo("Segmentación Inteligente de Clientes (K-Means)")
+        
+        crear_descripcion_seccion(
+            "¿Qué es el Clustering K-Means?",
+            "El clustering K-Means es una técnica de machine learning que agrupa automáticamente a tus clientes en segmentos "
+            "con comportamientos similares. Analiza la Recencia (cuándo compraron por última vez), Frecuencia (cuántas veces compran) "
+            "y Valor Monetario (cuánto gastan). Esta segmentación permite personalizar estrategias de marketing y ventas para cada grupo."
+        )
         
         try:
             from sklearn.cluster import KMeans
@@ -765,10 +797,10 @@ with tab_clientes:
                 
                 rfm_data['cluster'] = clusters
                 rfm_data['cluster_nombre'] = rfm_data['cluster'].map({
-                    0: 'Cluster Premium',
-                    1: 'Cluster Activo',
-                    2: 'Cluster En Riesgo',
-                    3: 'Cluster Inactivo'
+                    0: 'Premium',
+                    1: 'Activo',
+                    2: 'En Riesgo',
+                    3: 'Inactivo'
                 })
                 
                 muestra_viz = rfm_data.sample(min(1000, len(rfm_data)))
@@ -779,47 +811,124 @@ with tab_clientes:
                     y='frequency',
                     z='monetary',
                     color='cluster_nombre',
-                    title='Segmentación 3D de Clientes (Recencia, Frecuencia, Valor Monetario)',
+                    title='Visualización 3D de Segmentos de Clientes',
                     labels={
-                        'recency': 'Recencia (días)',
-                        'frequency': 'Frecuencia de Compra',
-                        'monetary': 'Valor Monetario (USD)',
+                        'recency': 'Días desde Última Compra',
+                        'frequency': 'Número de Compras',
+                        'monetary': 'Gasto Total (USD)',
                         'cluster_nombre': 'Segmento'
                     },
                     color_discrete_map={
-                        'Cluster Premium': '#10B981',
-                        'Cluster Activo': '#3B82F6',
-                        'Cluster En Riesgo': '#F59E0B',
-                        'Cluster Inactivo': '#EF4444'
+                        'Premium': '#10B981',
+                        'Activo': '#3B82F6',
+                        'En Riesgo': '#F59E0B',
+                        'Inactivo': '#EF4444'
                     },
                     height=600
                 )
                 
                 fig_clusters.update_traces(
-                    marker=dict(size=5, opacity=0.7),
-                    hovertemplate='<b>%{customdata[0]}</b><br>Recencia: %{x} días<br>Frecuencia: %{y} compras<br>Valor: $%{z:,.0f}<extra></extra>'
+                    marker=dict(size=5, opacity=0.7)
                 )
                 
                 st.plotly_chart(fig_clusters, use_container_width=True)
                 
                 col_cluster = st.columns(4)
+                cluster_counts = {}
                 for i, nombre in enumerate(['Premium', 'Activo', 'En Riesgo', 'Inactivo']):
+                    cluster_counts[nombre] = len(rfm_data[rfm_data['cluster'] == i])
                     with col_cluster[i]:
-                        count_cluster = len(rfm_data[rfm_data['cluster'] == i])
+                        count_cluster = cluster_counts[nombre]
                         pct_cluster = (count_cluster / len(rfm_data) * 100)
                         st.metric(
-                            f"Cluster {nombre}",
-                            f"{count_cluster} clientes",
-                            delta=f"{pct_cluster:.1f}% del total"
+                            f"🎯 {nombre}",
+                            f"{count_cluster:,}",
+                            delta=f"{pct_cluster:.1f}%"
                         )
+                
+                # Calcular promedios por cluster para insights
+                cluster_stats = rfm_data.groupby('cluster_nombre').agg({
+                    'recency': 'mean',
+                    'frequency': 'mean',
+                    'monetary': 'mean'
+                }).round(0)
+                
+                # Insights por segmento
+                st.markdown("### 📊 Características de Cada Segmento")
+                
+                col_desc1, col_desc2 = st.columns(2)
+                
+                with col_desc1:
+                    st.markdown("""
+                    <div style='background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 1.5rem; border-radius: 12px; color: white; margin-bottom: 1rem;'>
+                        <h4 style='margin: 0 0 0.75rem 0; color: white !important;'>💎 Clientes Premium</h4>
+                        <p style='margin: 0; color: rgba(255,255,255,0.95) !important;'>
+                            <strong>Perfil:</strong> Tus mejores clientes. Compran frecuentemente, con alto valor y recientemente activos.<br>
+                            <strong>Características:</strong> Baja recencia, alta frecuencia, alto gasto.<br>
+                            <strong>Prioridad:</strong> MUY ALTA - Son el motor del negocio.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    st.markdown("""
+                    <div style='background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); padding: 1.5rem; border-radius: 12px; color: white; margin-bottom: 1rem;'>
+                        <h4 style='margin: 0 0 0.75rem 0; color: white !important;'>⚠️ Clientes En Riesgo</h4>
+                        <p style='margin: 0; color: rgba(255,255,255,0.95) !important;'>
+                            <strong>Perfil:</strong> Clientes valiosos que están perdiendo actividad. Pueden abandonar pronto.<br>
+                            <strong>Características:</strong> Recencia media-alta, frecuencia decreciente.<br>
+                            <strong>Prioridad:</strong> ALTA - Requieren reactivación urgente.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col_desc2:
+                    st.markdown("""
+                    <div style='background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); padding: 1.5rem; border-radius: 12px; color: white; margin-bottom: 1rem;'>
+                        <h4 style='margin: 0 0 0.75rem 0; color: white !important;'>✅ Clientes Activos</h4>
+                        <p style='margin: 0; color: rgba(255,255,255,0.95) !important;'>
+                            <strong>Perfil:</strong> Clientes regulares y consistentes, aunque no son los de mayor gasto.<br>
+                            <strong>Características:</strong> Baja-media recencia, frecuencia media, gasto moderado.<br>
+                            <strong>Prioridad:</strong> MEDIA - Potencial para convertirse en Premium.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    st.markdown("""
+                    <div style='background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); padding: 1.5rem; border-radius: 12px; color: white; margin-bottom: 1rem;'>
+                        <h4 style='margin: 0 0 0.75rem 0; color: white !important;'>😴 Clientes Inactivos</h4>
+                        <p style='margin: 0; color: rgba(255,255,255,0.95) !important;'>
+                            <strong>Perfil:</strong> No han comprado recientemente. Pueden estar perdidos.<br>
+                            <strong>Características:</strong> Alta recencia, baja frecuencia, bajo gasto.<br>
+                            <strong>Prioridad:</strong> BAJA - Evaluar costo de reactivación.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # Recomendaciones específicas por cluster
+                recomendaciones_clustering = [
+                    f"<strong>Premium ({cluster_counts['Premium']:,} clientes):</strong> Programa VIP exclusivo, acceso anticipado a nuevos productos, atención personalizada",
+                    f"<strong>Activos ({cluster_counts['Activo']:,} clientes):</strong> Ofertas de up-selling/cross-selling, programa de referidos, incentivos por mayor gasto",
+                    f"<strong>En Riesgo ({cluster_counts['En Riesgo']:,} clientes):</strong> Campañas de win-back con descuentos especiales, encuestas de satisfacción, emails personalizados",
+                    f"<strong>Inactivos ({cluster_counts['Inactivo']:,} clientes):</strong> Campañas de reactivación masiva, ofertas agresivas de reenganche, limpiar base de datos si el costo es muy alto"
+                ]
+                
+                crear_recomendaciones("Estrategias por Segmento de Clientes", recomendaciones_clustering)
+                
             else:
-                st.info("Se requieren al menos 10 clientes para generar el clustering. Ajusta los filtros.")
+                st.info("Se requieren al menos 10 clientes para generar el clustering. Ajusta los filtros para incluir más datos.")
                 
         except Exception as e:
-            st.error(f"Error al generar clustering: {str(e)}")
-            st.info("Intenta ajustar los filtros o verificar que hay datos suficientes para el análisis.")
+            st.error(f"❌ Error al generar la segmentación: {str(e)}")
+            st.info("💡 Consejo: Intenta ajustar los filtros del sidebar para incluir más clientes o un período de tiempo más amplio.")
     
-    st.subheader("Riesgo de Churn")
+    crear_seccion_titulo("Análisis de Riesgo de Abandono (Churn)")
+    
+    crear_descripcion_seccion(
+        "¿Qué es el Riesgo de Churn?",
+        "El riesgo de churn (abandono) mide la probabilidad de que un cliente deje de comprar en tu negocio. "
+        "Este análisis identifica clientes en riesgo para permitir acciones preventivas. Un churn alto (>70%) indica "
+        "clientes que probablemente no volverán, medio (40-70%) requiere atención, y bajo (<40%) son clientes estables."
+    )
     
     col_churn1, col_churn2 = st.columns([6, 4])
     
@@ -829,7 +938,7 @@ with tab_clientes:
             x='churn_probability',
             nbins=30,
             title='Distribución de Probabilidad de Churn',
-            labels={'churn_probability': 'Probabilidad de Churn', 'count': 'Cantidad de Clientes'},
+            labels={'churn_probability': 'Probabilidad de Churn (%)', 'count': 'Cantidad de Clientes'},
             color_discrete_sequence=['#EF4444']
         )
         fig_churn.update_layout(height=400)
@@ -841,7 +950,7 @@ with tab_clientes:
         churn_bajo = len(clientes_filt[clientes_filt['churn_probability'] <= 0.4])
         
         churn_data = pd.DataFrame({
-            'riesgo': ['Alto', 'Medio', 'Bajo'],
+            'riesgo': ['Alto (>70%)', 'Medio (40-70%)', 'Bajo (<40%)'],
             'cantidad': [churn_alto, churn_medio, churn_bajo]
         })
         
@@ -851,12 +960,42 @@ with tab_clientes:
             names='riesgo',
             title='Clasificación de Riesgo de Churn',
             color='riesgo',
-            color_discrete_map={'Alto': '#EF4444', 'Medio': '#F59E0B', 'Bajo': '#10B981'}
+            color_discrete_map={'Alto (>70%)': '#EF4444', 'Medio (40-70%)': '#F59E0B', 'Bajo (<40%)': '#10B981'}
         )
         fig_churn_pie.update_layout(height=400)
         st.plotly_chart(fig_churn_pie, use_container_width=True)
+    
+    # Insights accionables
+    total_clientes_analisis = len(clientes_filt)
+    porcentaje_alto = (churn_alto / total_clientes_analisis * 100) if total_clientes_analisis > 0 else 0
+    porcentaje_medio = (churn_medio / total_clientes_analisis * 100) if total_clientes_analisis > 0 else 0
+    
+    crear_insight(
+        "Hallazgo Clave",
+        f"De {total_clientes_analisis:,} clientes analizados, {churn_alto:,} ({porcentaje_alto:.1f}%) tienen riesgo ALTO de abandono "
+        f"y {churn_medio:,} ({porcentaje_medio:.1f}%) tienen riesgo MEDIO. Estos {churn_alto + churn_medio:,} clientes requieren "
+        "atención inmediata para evitar pérdida de ingresos."
+    )
+    
+    # Recomendaciones específicas
+    recomendaciones_churn = [
+        f"<strong>Prioridad Crítica:</strong> Contactar a los {churn_alto:,} clientes de riesgo ALTO con ofertas personalizadas o descuentos exclusivos",
+        "<strong>Programas de Fidelización:</strong> Implementar un programa de puntos o beneficios para clientes de riesgo MEDIO",
+        "<strong>Email Marketing:</strong> Enviar campañas de reactivación con productos relevantes basados en su historial de compras",
+        "<strong>Encuestas de Satisfacción:</strong> Contactar clientes en riesgo para identificar problemas y oportunidades de mejora",
+        f"<strong>Análisis de Valor:</strong> Calcular el LTV de los {churn_alto:,} clientes en riesgo para priorizar esfuerzos de retención"
+    ]
+    
+    crear_recomendaciones("Acciones Recomendadas para Reducir Churn", recomendaciones_churn)
 
 with tab_canal:
+    crear_descripcion_seccion(
+        "Optimización de Canales de Venta",
+        "Descubre qué dispositivos (móvil, escritorio, tablet) generan más ventas, qué fuentes de tráfico son más rentables "
+        "(redes sociales, email, búsqueda orgánica, publicidad) y qué métodos de pago prefieren tus clientes. "
+        "Optimiza tu inversión en marketing según estos datos."
+    )
+    
     crear_seccion_titulo("Análisis de Canal")
     
     col1, col2 = st.columns(2)
@@ -950,6 +1089,13 @@ with tab_canal:
         st.warning(f"No se pudo generar diagrama Sankey: {str(e)}")
 
 with tab_ml:
+    crear_descripcion_seccion(
+        "Inteligencia Artificial para Decisiones Estratégicas",
+        "Esta sección combina múltiples modelos de machine learning para detectar patrones ocultos, anomalías en ventas y "
+        "oportunidades de optimización. Los algoritmos analizan millones de datos en segundos para proporcionarte insights "
+        "que serían imposibles de detectar manualmente."
+    )
+    
     crear_seccion_titulo("ML & IA Insights")
     
     if not filtros.get('mostrar_ml'):
@@ -1042,6 +1188,13 @@ with tab_ml:
             st.warning(f"No se pudo generar análisis de recomendaciones: {str(e)}")
 
 with tab_finanzas:
+    crear_descripcion_seccion(
+        "Salud Financiera del Negocio",
+        "Analiza en detalle la rentabilidad de tu negocio. El estado de Pérdidas y Ganancias (P&L) muestra la cascada de "
+        "costos desde ingresos brutos hasta beneficio neto. El gráfico waterfall visualiza cómo cada componente (costos, "
+        "impuestos, gastos) afecta tu margen final."
+    )
+    
     crear_seccion_titulo("Análisis Financiero")
     
     st.subheader("💰 Estado de Pérdidas y Ganancias (P&L)")
@@ -1153,6 +1306,13 @@ with tab_finanzas:
         st.metric("AOV (Valor Promedio)", f"${aov:,.0f}")
 
 with tab_operacional:
+    crear_descripcion_seccion(
+        "Eficiencia Operativa y Logística",
+        "Monitorea la eficiencia de tus operaciones diarias. Analiza tiempos de procesamiento de pedidos, rotación de inventario, "
+        "productividad por pedido y tasa de devoluciones. Estos indicadores te ayudan a identificar cuellos de botella y "
+        "oportunidades de optimización en tus procesos."
+    )
+    
     crear_seccion_titulo("Métricas Operacionales")
     
     st.subheader("📦 KPIs Operativos Principales")
