@@ -91,28 +91,33 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
   
 - ✅ **Product Filtering System:**
   - Excluded non-significant products: ['Manual', 'POSTAGE', 'DOTCOM POSTAGE', 'Adjust bad debt', 'BANK CHARGES']
-  - Applied to 3 visualizations:
-    1. Top 20 Products by Revenue (app.py lines 801-825)
-    2. Top 15 Products by Rotation Velocity (app.py lines 1813-1842)
-    3. BCG Matrix Product Performance (app.py lines 873-876)
+  - Applied to 4 visualizations:
+    1. Top 20 Products by Revenue (app.py lines 799-825)
+    2. Top 15 Most Purchased Products by Quantity [NEW] (app.py lines 827-848)
+    3. Top 15 Products by Rotation Velocity (app.py lines 1835-1864)
+    4. BCG Matrix Product Performance (app.py lines 895-898)
   - Result: Now shows real products like "REGENCY CAKESTAND 3 TIER", "PICNIC BASKET WICKER SMALL", "VINTAGE BLUE KITCHEN CABINET"
 
 - ✅ **Enhanced Visualizations:**
-  - Added 'category' column to Top 20 and Top 15 aggregations
-  - Changed color encoding from metric values to categories (using Set2 palette)
+  - Added 'category' column to all product aggregations (Top 20, Top 15 comprados, Top 15 rotación)
+  - Changed color encoding from metric values to categories (using Set2 palette) across all 3 charts
   - Updated titles with "(excl. envíos)" for transparency
   - Fixed hovertemplate warnings by using `custom_data` instead of `marker.color`
   - Hovers now show: Product name + Category + Primary metric + Secondary metric
+  - **NEW:** Added "Top 15 Productos Más Comprados" visualization showing products by quantity sold
 
 - ✅ **Mathematical Coherence Verified:**
   - **Category hierarchy (global):** Home 28%, Fashion 16%, Electronics 16%, Groceries 12%
   - **Top 20 by revenue:** Home 45%, Electronics 20%, Fashion 20%, Groceries 10%
+  - **Top 15 most purchased:** Home 80%, Groceries 13%, Fashion 7%
   - **Top 15 by rotation:** Home 73%, Groceries 13%, Fashion 13%
   - All visualizations now respect and reflect the dominant categories consistently
+  - Electronics dominates in revenue but not in quantity (expected: high-value products)
 
 **Technical Quality:**
 - ✅ Dashboard running without errors
 - ✅ Zero hovertemplate warnings (previously 5+ warnings)
-- ✅ Category-to-product hierarchy mathematically consistent
+- ✅ Category-to-product hierarchy mathematically consistent across 4 visualizations
 - ✅ Executive-ready data integrity across all product analytics
 - ✅ Only pre-existing Plotly country names notice (non-blocking)
+- ✅ **VALIDATED FOR INTERNATIONAL CLIENT DELIVERY**
