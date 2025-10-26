@@ -6,7 +6,35 @@ from datetime import datetime, timedelta
 
 @st.cache_data(ttl=300)
 def load_data_from_postgres():
-    """Carga datos desde PostgreSQL"""
+    """Carga datos desde archivos unificados (Parquet) o PostgreSQL"""
+    import os
+    
+    # Verificar si existen archivos unificados (763K transacciones, 16 años)
+    use_unified = os.path.exists('data/transactions_unified.parquet')
+    
+    if use_unified:
+        try:
+            # Cargar desde archivos unificados (mucho más rápido)
+            transactions_df = pd.read_parquet('data/transactions_unified.parquet')
+            customers_df = pd.read_parquet('data/customers_unified.parquet')
+            products_df = pd.read_parquet('data/products_unified.parquet')
+            
+            # Convertir fechas
+            transactions_df['date'] = pd.to_datetime(transactions_df['date'])
+            customers_df['registration_date'] = pd.to_datetime(customers_df['registration_date'])
+            customers_df['last_purchase_date'] = pd.to_datetime(customers_df['last_purchase_date'])
+            if 'launch_date' in products_df.columns:
+                products_df['launch_date'] = pd.to_datetime(products_df['launch_date'])
+            
+            # Añadir mensaje informativo
+            st.info(f"📊 Usando base de datos unificada: {len(transactions_df):,} transacciones cubriendo {(transactions_df['date'].max().year - transactions_df['date'].min().year + 1)} años ({transactions_df['date'].min().year}-{transactions_df['date'].max().year})")
+            
+            return transactions_df, customers_df, products_df
+            
+        except Exception as e:
+            st.warning(f"Error cargando archivos unificados, intentando PostgreSQL: {str(e)}")
+    
+    # Fallback a PostgreSQL
     engine = get_engine()
     
     try:
