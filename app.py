@@ -814,9 +814,10 @@ with tab_productos:
         title='Top 20 Productos por Ingresos (excl. envíos)',
         labels=LABELS,
         color='category',
-        color_discrete_sequence=px.colors.qualitative.Set2
+        color_discrete_sequence=px.colors.qualitative.Set2,
+        custom_data=['category', 'profit']
     )
-    fig_productos.update_traces(hovertemplate='<b>%{y}</b><br>Categoría: %{marker.color}<br>Ingresos: $%{x:,.0f}<extra></extra>')
+    fig_productos.update_traces(hovertemplate='<b>%{y}</b><br>Categoría: %{customdata[0]}<br>Ingresos: $%{x:,.0f}<br>Beneficio: $%{customdata[1]:,.0f}<extra></extra>')
     fig_productos.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_productos, use_container_width=True)
     
@@ -869,7 +870,8 @@ with tab_productos:
     
     st.subheader("Análisis de Performance de Productos (Matriz BCG)")
     
-    productos_bcg = datos_filtrados.groupby(['product_id', 'product_name']).agg({
+    # Usar los mismos datos filtrados (productos reales, sin envíos)
+    productos_bcg = datos_productos_reales.groupby(['product_id', 'product_name']).agg({
         'total_amount_usd': 'sum',
         'transaction_id': 'count'
     }).reset_index()
@@ -1829,9 +1831,10 @@ with tab_operacional:
         title='Top 15 Productos por Velocidad de Rotación (excl. envíos)',
         labels=LABELS,
         color='categoria',
-        color_discrete_sequence=px.colors.qualitative.Set2
+        color_discrete_sequence=px.colors.qualitative.Set2,
+        custom_data=['categoria', 'unidades_vendidas']
     )
-    fig_rotacion.update_traces(hovertemplate='<b>%{y}</b><br>Categoría: %{marker.color}<br>Velocidad: %{x:,.0f}<extra></extra>')
+    fig_rotacion.update_traces(hovertemplate='<b>%{y}</b><br>Categoría: %{customdata[0]}<br>Velocidad: %{x:,.0f}<br>Unidades: %{customdata[1]:,.0f}<extra></extra>')
     fig_rotacion.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_rotacion, use_container_width=True)
 

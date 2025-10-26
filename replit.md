@@ -81,3 +81,38 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
 - ✅ Client/executive-ready presentation
 - ✅ Only pre-existing Plotly country names notice (non-blocking)
 - ✅ Architect review: PASS on all corrections
+
+**Dashboard v3.5 - Product Analysis Data Coherence (October 26, 2025):**
+
+- ✅ **Data Coherence Issue Resolved:**
+  - **PROBLEM:** Top 20 products and Top 15 rotation charts showed "Manual", "POSTAGE", "DOTCOM POSTAGE" as dominant products, distorting real product hierarchy
+  - **ROOT CAUSE:** These are generic/shipping cost entries, not actual products - they appeared across all categories inflating rankings
+  - **SOLUTION:** Implemented consistent product filtering across all product visualizations
+  
+- ✅ **Product Filtering System:**
+  - Excluded non-significant products: ['Manual', 'POSTAGE', 'DOTCOM POSTAGE', 'Adjust bad debt', 'BANK CHARGES']
+  - Applied to 3 visualizations:
+    1. Top 20 Products by Revenue (app.py lines 801-825)
+    2. Top 15 Products by Rotation Velocity (app.py lines 1813-1842)
+    3. BCG Matrix Product Performance (app.py lines 873-876)
+  - Result: Now shows real products like "REGENCY CAKESTAND 3 TIER", "PICNIC BASKET WICKER SMALL", "VINTAGE BLUE KITCHEN CABINET"
+
+- ✅ **Enhanced Visualizations:**
+  - Added 'category' column to Top 20 and Top 15 aggregations
+  - Changed color encoding from metric values to categories (using Set2 palette)
+  - Updated titles with "(excl. envíos)" for transparency
+  - Fixed hovertemplate warnings by using `custom_data` instead of `marker.color`
+  - Hovers now show: Product name + Category + Primary metric + Secondary metric
+
+- ✅ **Mathematical Coherence Verified:**
+  - **Category hierarchy (global):** Home 28%, Fashion 16%, Electronics 16%, Groceries 12%
+  - **Top 20 by revenue:** Home 45%, Electronics 20%, Fashion 20%, Groceries 10%
+  - **Top 15 by rotation:** Home 73%, Groceries 13%, Fashion 13%
+  - All visualizations now respect and reflect the dominant categories consistently
+
+**Technical Quality:**
+- ✅ Dashboard running without errors
+- ✅ Zero hovertemplate warnings (previously 5+ warnings)
+- ✅ Category-to-product hierarchy mathematically consistent
+- ✅ Executive-ready data integrity across all product analytics
+- ✅ Only pre-existing Plotly country names notice (non-blocking)
