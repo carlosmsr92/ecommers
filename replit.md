@@ -1,159 +1,38 @@
 # Global Ecommerce Analytics Platform
 
 ## Overview
-This project delivers a professional Business Intelligence dashboard for global e-commerce analytics. It processes over 760,000 transactions spanning 16 years, combining real and synthetic data to provide advanced KPIs, multidimensional analysis, and predictive insights. The platform features an interactive Streamlit dashboard, a FastAPI RESTful API with ML endpoints, and robust data management with PostgreSQL and Parquet. Its core purpose is to enable data-driven decision-making for e-commerce businesses through comprehensive analytics, forecasting, customer segmentation, and product performance evaluation. The platform is designed for scalability and production readiness, aiming to unlock significant market potential by providing deep insights into sales, customer behavior, and operational efficiency.
-
-## Recent Changes (October 26, 2025)
-**Dashboard v2.0 - Complete Implementation:**
-- ✅ Implemented all 9 navigation tabs with full functionality (Resumen General, Geografía, Forecasting, Productos, Clientes, Canal, ML & IA, Finanzas, Operacional)
-- ✅ Created modular architecture: utils/ui_components.py, utils/filtros.py, utils/visualizaciones_avanzadas.py
-- ✅ Implemented collapsible filter system in sidebar without overlapping
-- ✅ Applied corporate color palette (#667eea, #f093fb, #10B981, #F59E0B, #EF4444, #3B82F6)
-- ✅ All content translated to professional Spanish
-- ✅ Added cmsr92 signature in footer
-- ✅ Prophet forecasting with 90-day predictions and confidence intervals
-- ✅ BCG matrix for product analysis (4 quadrants)
-- ✅ RFM customer segmentation with K-Means clustering
-- ✅ Sankey diagram for conversion flow analysis
-- ✅ Isolation Forest for anomaly detection
-- ✅ Waterfall chart for financial P&L analysis
-- ✅ Operational metrics with rotation analysis
-- ✅ Corrected MAPE calculation for historical data only
-- ✅ Added ML clustering validation for required columns
-- ✅ E2E testing completed successfully on all tabs
-- ✅ README v2.0 created in Spanish with complete documentation
-
-**Dashboard v2.1 - Enterprise UX/UI Enhancements (October 26, 2025):**
-- ✅ **Automatic Theme Detection:** CSS `prefers-color-scheme` media queries for automatic light/dark mode based on browser settings (no manual toggle)
-- ✅ **Professional Tab Navigation:** Flex-wrap layout displaying all 9 tabs visibly without horizontal scrolling, responsive design for mobile/tablet
-- ✅ **Contextual Descriptions:** Professional section descriptions at the start of all 9 tabs explaining purpose and interpretation for non-technical users
-- ✅ **Executive Insights System:** Automated insight generation with 4 conditional scenarios (growth, concentration, category leader, efficiency) based on real-time data
-- ✅ **KPI Explanations:** Collapsible expander with clear definitions of all 8 KPIs in accessible Spanish for business stakeholders
-- ✅ **Actionable Recommendations:** 5 cross-referenced recommendations linking tabs for comprehensive analysis (Geography, Forecasting, Segmentation, ML, Financial)
-- ✅ **Enhanced Churn Analysis:** Risk categorization (High >70%, Medium 40-70%, Low <40%) with specific insights and 5 tiered recommendations
-- ✅ **Enhanced Clustering:** 4 visual segment cards (Premium, Active, At Risk, Inactive) with characteristics, profiles, and prioritized strategies
-- ✅ **Robust Error Handling:** Zero-division protection, null-data handling with clear messaging, coherent insights in all edge cases
-- ✅ **Visual Consistency:** Standardized color palette, professional labels, clear legends, formatted numbers across all visualizations
-- ✅ **E2E Testing Completed:** Full Playwright validation of all 9 tabs, insights system, KPI explanations, churn/clustering enhancements, and professional UX elements
-
-**Dashboard v2.2 - Complete Spanish Internationalization (October 26, 2025):**
-- ✅ **Category Translation System:** Created utils/traducciones.py with comprehensive CATEGORIAS_ES dictionary (20+ mappings: Electronics→Electrónica, Books→Libros, Clothing→Ropa, etc.)
-- ✅ **Automatic Data Translation:** Categories and subcategories automatically translated at data load time via aplicar_traducciones_df() in utils/data_loader_pg.py
-- ✅ **Spanish Filters:** Sidebar filters display all categories in professional Spanish (Electrónica, Libros, Deportes, Juguetes, Belleza, etc.)
-- ✅ **Professional Chart Labels:** Centralized LABELS_PROFESIONALES dictionary with 50+ mappings eliminating technical field names from all visualizations
-- ✅ **Professional Hovertemplates:** All 20+ charts updated with formatted tooltips: "Categoría: Electrónica, Ingresos: $7,258,482" instead of "category=electronics, total_amount_usd=7258482"
-- ✅ **Spanish Insights:** Executive insights automatically use translated categories ("Categoría Líder: Electrónica domina el portafolio con 45.2%")
-- ✅ **Number Formatting:** Consistent professional formatting throughout: $1,234,567 (thousand separators), 12.3% (percentages)
-- ✅ **Zero Mix Languages:** 100% Spanish interface with no English category names or technical column names visible in any chart, tooltip, or filter
-- ✅ **Translation Architecture:** Single-pass translation at data load ensures consistency across all tabs, filters, and visualizations without performance impact
-- ✅ **Case-Insensitive Matching:** Robust traducir_categoria() function handles capitalization variations (electronics/Electronics/ELECTRONICS → Electrónica)
-
-**Dashboard v2.3 - Complete Geographic & Temporal Internationalization (October 26, 2025):**
-- ✅ **Country Translation System:** Extended PAISES_TRADUCCION dictionary in utils/traducciones.py with 100+ country mappings (United States→Estados Unidos, United Kingdom→Reino Unido, etc.)
-- ✅ **Weekday Translation System:** Added DIAS_SEMANA_ES dictionary mapping English weekdays to Spanish (Monday→Lunes, Tuesday→Martes, etc.)
-- ✅ **Automatic Geographic Translation:** Countries translated at data load time via aplicar_traducciones_paises_df() ensuring all geographic visualizations display Spanish names
-- ✅ **All Charts Updated:** 25+ charts now have professional Spanish hovertemplates with formatted currency ($1,234,567), percentages (12.3%), and thousands separators
-- ✅ **Enhanced Chart Tooltips:** Every visualization updated with custom hovertemplate for consistent professional presentation:
-  - Geographic charts: "País: Estados Unidos, Ingresos: $12,345,678"
-  - Product charts: "Producto: Widget ABC, Ventas: 1,234 unidades"
-  - Temporal charts: "Fecha: 2024-01, Beneficio: $567,890"
-  - Customer charts: "Segmento: Campeones, Clientes: 2,345 (23.5%)"
-- ✅ **Weekday Charts in Spanish:** Operational tab now displays weekdays in Spanish (Lunes, Martes, Miércoles, etc.) with proper ordering
-- ✅ **Data Quality Issue Identified:** Documented 9-month gap in dataset (Jan-Sep 2023) caused by synthetic data generation failure - requires data regeneration script update
-- ✅ **Translation Functions:** Centralized traducir_pais() and traducir_dia_semana() functions with case-insensitive matching and fallback to original value
-
-**Dashboard v2.4 - Data Gap Fix & Filter Localization (October 26, 2025):**
-- ✅ **Data Gap Resolution:** Generated 10,550 synthetic transactions to fill the 9-month gap (January-September 2023)
-  - January 2023: 1,215 transactions
-  - February 2023: 1,074 transactions
-  - March 2023: 1,209 transactions
-  - April 2023: 1,190 transactions
-  - May 2023: 1,196 transactions
-  - June 2023: 1,166 transactions
-  - July 2023: 1,161 transactions
-  - August 2023: 1,193 transactions
-  - September 2023: 1,146 transactions
-- ✅ **Complete Dataset:** Total transactions increased from 763,884 to 774,434 with no temporal gaps from 2010-2025
-- ✅ **Filter Placeholders in Spanish:** All 8 multiselect filters now display "Elige opciones" instead of "Choose options"
-- ✅ **Continuous Time Series:** Forecasting and temporal analysis charts now display smooth curves without data interruptions
-- ✅ **Realistic Data Distribution:** Synthetic data generated using 2022 distributions for countries, products, payment methods, and customer segments to maintain consistency
-
-**Dashboard v2.5 - Enterprise-Level Corrections & Professional Polish (October 26, 2025):**
-- ✅ **Data Coherence Fix:** Completely regenerated 773,384 transactions (2012-2025) with coherent profit margins ($4.59-$4.75 avg) eliminating abnormal spikes
-- ✅ **Complete Translation System:** Extended utils/traducciones.py with RFM segments, devices, payment methods dictionaries
-  - RFM Segments: Champions→Campeones, Loyal→Leales, At Risk→En Riesgo, Hibernating→Hibernando, Lost→Perdidos, etc.
-  - Devices: Mobile→Móvil, Tablet→Tableta, Desktop→Escritorio
-  - Payment Methods: Credit Card→Tarjeta de Crédito, Bank Transfer→Transferencia Bancaria
-- ✅ **Automatic Translation Pipeline:** utils/data_loader_pg.py now applies all translations at load time (categories, countries, RFM, devices, payments)
-- ✅ **Clientes Tab Enhancements:**
-  - Fixed RFM pie chart "Proporción de Segmentos" labels (no more "segmento=regular" format)
-  - Churn probability histogram with professional Spanish axes ("Probabilidad de Abandono", "Cantidad de Clientes")
-  - Churn risk classification pie chart with proper labels
-  - 3D K-Means clustering visualization with Spanish labels already implemented
-- ✅ **Canal Tab Enhancements:**
-  - Devices pie chart now displays "Móvil", "Tableta", "Escritorio" 
-  - Payment methods bar chart improved height (450px) and removed "txns" suffix, shows formatted numbers
-  - Professional axis labels in Spanish
-- ✅ **ML & IA Tab Enhancements:**
-  - Correlation matrix with Spanish labels ("Ingresos (USD)", "Cantidad", "Beneficio (USD)", "Precio Unitario")
-  - Added professional explanation of correlation interpretation for non-technical users
-  - Anomaly detection chart already has Spanish labels
-  - Sankey flow diagram uses automatic translations from data
-- ✅ **Finanzas Tab Enhancements:**
-  - Fixed waterfall chart: now correctly displays P&L cascade (Ingresos Brutos → Costos → Beneficio Neto) without bars starting from 0 incorrectly
-  - Added professional explanation of waterfall interpretation
-  - Proper text labels with formatted currency values
-- ✅ **Operacional Tab Enhancements:**
-  - Products by rotation chart uses automatic product name translations
-  - Professional labels and hovertemplates throughout
-- ✅ **Console Logs Clean:** Eliminated all Plotly hovertemplate warnings by using appropriate chart configurations
-- ✅ **Zero Console Errors:** Dashboard runs without critical errors, only minor pre-existing Streamlit/Popper warnings that don't affect functionality
+This project delivers a professional Business Intelligence dashboard for global e-commerce analytics. It processes over 770,000 transactions spanning 16 years, combining real and synthetic data to provide advanced KPIs, multidimensional analysis, and predictive insights. The platform features an interactive Streamlit dashboard, a FastAPI RESTful API with ML endpoints, and robust data management with PostgreSQL and Parquet. Its core purpose is to enable data-driven decision-making for e-commerce businesses through comprehensive analytics, forecasting, customer segmentation, and product performance evaluation. The platform is designed for scalability and production readiness, aiming to unlock significant market potential by providing deep insights into sales, customer behavior, and operational efficiency. The entire platform is internationalized for Spanish-speaking users, including all UI elements, data translations, and insights.
 
 ## User Preferences
 I prefer detailed explanations. Do not make changes to the folder Z. Do not make changes to the file Y.
 
 ## System Architecture
-The system employs a multi-tiered architecture. The **Frontend** is an interactive dashboard built with Streamlit, utilizing Plotly for advanced visualizations and Folium for geospatial mapping. The **Backend** is a FastAPI RESTful API, providing data and machine learning endpoints, with PostgreSQL as the primary database and SQLAlchemy for ORM. For **Machine Learning**, Prophet is used for time-series forecasting, Scikit-learn for clustering and anomaly detection, and XGBoost for advanced predictions. ReportLab handles PDF generation, and OpenPyXL manages Excel exports.
+The system employs a multi-tiered architecture focusing on modularity and scalability.
 
 **UI/UX Decisions:**
-The dashboard focuses on clear, interactive visualizations. It presents key performance indicators (KPIs) via digestible cards, choropleth maps for geographical analysis, hierarchical treemaps for detailed breakdowns, and time-series plots with forecasting. Advanced filtering via a dynamic sidebar allows users to slice data by period, geography, product, customer segment, and more.
+The dashboard is built with Streamlit and features a professional, responsive design with automatic dark/light mode detection. It utilizes a corporate color palette and presents all content in professional Spanish, including contextual descriptions, KPI explanations, and actionable recommendations. Key elements include interactive visualizations with Plotly, professional tab navigation, and executive insights generation based on real-time data. Visual consistency is maintained through standardized formatting and clear labels.
 
 **Technical Implementations & Feature Specifications:**
 
-*   **Interactive Dashboard (Streamlit):**
-    *   **KPIs:** 8 main KPIs including Total Revenue, Orders, AOV, Profit, Customers, Conversion Rate, LTV, and Churn Rate with comparative metrics.
-    *   **Geo-spatial Analysis:** World choropleth maps, top 15 country rankings, and hierarchical treemaps (Country → City → Category).
-    *   **Forecasting & Trends:** Time-series plots with Prophet 90-day forecasting, confidence bands, and model metrics (MAPE, RMSE, R²).
-    *   **Product Analysis:** BCG matrix, top 20 products, revenue/profit by category.
-    *   **Customer Segmentation:** RFM analysis (11 segments), LTV distribution, cohort analysis, and churn prediction.
-    *   **ML Insights:** K-Means customer clustering, Isolation Forest anomaly detection, and channel performance analysis.
-    *   **Detailed Tables:** Interactive DataTable with pagination and CSV download.
-*   **API RESTful (FastAPI):**
-    *   **Data Endpoints:** For KPIs, transactions, customers, products, and aggregated analytics by country, category, and time-series.
-    *   **Machine Learning Endpoints:** For Prophet forecasting, K-Means customer clustering, churn risk identification, product recommendations (Market Basket Analysis), product demand forecasting, and anomaly detection.
-    *   **Export Endpoints:** For generating comprehensive Excel reports (8 sheets) and professional PDF reports.
-*   **Database Design (Unified Parquet + PostgreSQL):**
-    *   **Unified Dataset (Parquet files):** Primary data source with `transactions` (763,884 records), `customers` (47,580 records), `products` (4,161 records).
-    *   **PostgreSQL:** Available for backup/development with 100K sample records.
-    *   **Data Loader:** Automatically uses Parquet files for optimal performance with large datasets.
-    *   Optimized indexing on `transaction_id`, `customer_id`, `product_id`, `date`, `country`, and `category` for rapid queries.
-    *   **Data Composition:** 541,909 real transactions (Online Retail dataset UK, 2010-2011) + 221,975 synthetically generated transactions (gap-fill 2012-2022 + extension 2023-2025), covering 16 years across 47,580 customers and 4,161 products in 37 countries, ensuring realistic seasonal patterns and growth.
-*   **Advanced Filtering System:** Dynamic sidebar filters for date ranges, geographical locations, product categories, customer segments, payment methods, device types, traffic sources, and price ranges.
-*   **Report Export System:** Comprehensive Excel reports with 8 distinct sheets and professional PDF reports including key KPIs, top rankings, and category analyses.
+*   **Interactive Dashboard (Streamlit):** Features 9 functional navigation tabs for comprehensive analysis: General Summary, Geography, Forecasting, Products, Customers, Channel, ML & AI, Finance, and Operations. Includes 8 core KPIs, geo-spatial analysis with Folium, Prophet-based 90-day forecasting, BCG matrix for product analysis, RFM customer segmentation with K-Means clustering, Sankey diagrams, Isolation Forest for anomaly detection, and waterfall charts for financial P&L. All data, filters, labels, and insights are fully translated into Spanish.
+*   **API RESTful (FastAPI):** Provides data and machine learning endpoints for KPIs, transactions, customers, products, aggregated analytics, forecasting, clustering, churn prediction, product recommendations, and anomaly detection. Includes endpoints for generating comprehensive Excel (8 sheets) and PDF reports.
+*   **Database Design (Unified Parquet + PostgreSQL):** Primary data source is optimized Parquet files (774,434 transactions from 2010-2025), supplemented by PostgreSQL for development and backup. Data includes 541,909 real and 232,525 synthetically generated transactions, ensuring continuous time series and realistic distributions. Optimized indexing supports rapid query performance.
+*   **Internationalization System:** Comprehensive translation architecture (categories, countries, weekdays, RFM segments, devices, payment methods) ensures a 100% Spanish interface across all UI elements, data, charts, tooltips, and insights, applied automatically at data load time.
+*   **Advanced Filtering System:** Dynamic, collapsible sidebar filters allow data segmentation by date, geography, product, customer segment, payment method, device type, traffic source, and price range, all with Spanish placeholders.
 
 **System Design Choices:**
-The project prioritizes modularity and scalability. Streamlit provides rapid dashboard development, while FastAPI ensures a high-performance, well-documented API. PostgreSQL is chosen for its robustness and ACID compliance, with Parquet used for optimized data processing and backup. Machine learning models are integrated as API endpoints for easy consumption. Security is addressed through environment variables, CORS configuration, parameterized queries to prevent SQL injection, and input validation.
+The project emphasizes modularity and scalability using Streamlit for rapid dashboard development and FastAPI for a high-performance, well-documented API. PostgreSQL provides robustness, with Parquet files optimizing large dataset processing. Machine learning models are integrated as API endpoints for easy consumption. Security is managed through environment variables, CORS configuration, parameterized queries, and input validation.
 
 ## External Dependencies
-*   **Streamlit:** For interactive dashboard development.
-*   **FastAPI:** For building the RESTful API.
-*   **PostgreSQL:** Primary relational database.
-*   **Plotly:** For advanced and interactive data visualizations.
-*   **Folium:** For geo-spatial data visualization.
+*   **Streamlit:** Interactive dashboard development.
+*   **FastAPI:** RESTful API.
+*   **PostgreSQL:** Relational database.
+*   **Plotly:** Interactive data visualizations.
+*   **Folium:** Geo-spatial visualization.
 *   **SQLAlchemy:** ORM for database interactions.
-*   **Prophet (Meta):** For time-series forecasting.
-*   **Scikit-learn:** For machine learning algorithms (K-Means, Isolation Forest).
-*   **XGBoost:** For advanced predictive modeling.
-*   **ReportLab:** For generating professional PDF reports.
-*   **OpenPyXL:** For exporting data to Excel files.
-*   **Pandas & NumPy:** For data manipulation and numerical operations.
+*   **Prophet (Meta):** Time-series forecasting.
+*   **Scikit-learn:** Machine learning algorithms (K-Means, Isolation Forest).
+*   **XGBoost:** Advanced predictive modeling.
+*   **ReportLab:** PDF report generation.
+*   **OpenPyXL:** Excel file export.
+*   **Pandas & NumPy:** Data manipulation and numerical operations.
