@@ -4,56 +4,35 @@ __pycache__/
 *$py.class
 *.so
 .Python
+
+# Environments
+.env
+.venv
 env/
 venv/
-ENV/
-*.egg-info/
-dist/
-build/
-*.egg
 
-# Streamlit
-.streamlit/secrets.toml
+# Replit specific
+.replit
+.config/
+.cache/
+.upm/
+replit.nix
 
-# Environment variables
-.env
-.env.local
+# Development files
+pyproject.toml
+uv.lock
+.breakpoints
 
-# IDEs
+# Logs
+*.log
+/tmp/
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log
-
-# Data backups (keep only unified files)
-data/*_backup.*
-data/dataUK.csv
-data/Online*.xlsx
-
-# Temporary files
-*.tmp
-*.temp
-*_OLD.*
-*_backup.*
-attached_assets/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Cache
-.cache/
-*.cache
