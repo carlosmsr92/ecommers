@@ -618,12 +618,10 @@ with tab_forecasting:
             
             prophet_df = serie_temporal[['periodo', 'ingresos']].copy()
             prophet_df.columns = ['ds', 'y']
-            # Convertir a datetime manteniendo frecuencia
+            # Convertir a datetime SIN usar astype(str) que rompe la frecuencia
             prophet_df['ds'] = pd.to_datetime(prophet_df['ds'])
-            # Ordenar y asegurar frecuencia consistente
+            # Ordenar cronológicamente
             prophet_df = prophet_df.sort_values('ds').reset_index(drop=True)
-            # Establecer índice con frecuencia para que Prophet lo reconozca
-            prophet_df = prophet_df.set_index('ds').asfreq(freq).reset_index().dropna()
             
             with st.spinner('Entrenando modelo Prophet...'):
                 modelo = Prophet(
@@ -639,7 +637,17 @@ with tab_forecasting:
                 modelo.add_seasonality(name='monthly', period=30.5, fourier_order=5)
                 modelo.fit(prophet_df, algorithm='LBFGS')
                 
-                futuro = modelo.make_future_dataframe(periods=periods, freq=freq)
+                # Crear DataFrame futuro MANUALMENTE para evitar problemas con frecuencias
+                ultima_fecha = prophet_df['ds'].max()
+                if granularidad == 'Día':
+                    fechas_futuras = pd.date_range(start=ultima_fecha + pd.Timedelta(days=1), periods=periods, freq='D')
+                elif granularidad == 'Semana':
+                    fechas_futuras = pd.date_range(start=ultima_fecha + pd.Timedelta(weeks=1), periods=periods, freq='W-MON')
+                else:  # Mes
+                    fechas_futuras = pd.date_range(start=ultima_fecha + pd.DateOffset(months=1), periods=periods, freq='MS')
+                
+                futuro_df = pd.DataFrame({'ds': fechas_futuras})
+                futuro = pd.concat([prophet_df[['ds']], futuro_df], ignore_index=True)
                 forecast = modelo.predict(futuro)
             
             col1, col2 = st.columns([7, 3])
