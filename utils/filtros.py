@@ -72,16 +72,23 @@ def crear_filtros_sidebar(transacciones_df):
                     help="Fecha fin del análisis"
                 )
             
-            # Convertir date a datetime para consistencia
-            fecha_inicio = datetime.combine(fecha_inicio, datetime.min.time())
-            fecha_fin = datetime.combine(fecha_fin, datetime.max.time())
-            
-            # Validación: fecha inicio debe ser menor que fecha fin
-            if fecha_inicio >= fecha_fin:
-                st.error("⚠️ La fecha de inicio debe ser anterior a la fecha fin")
-                # Usar valores por defecto si hay error
+            # Validar que las fechas no sean None (puede ocurrir durante interacción con calendarios)
+            if fecha_inicio is None or fecha_fin is None:
+                # Usar valores por defecto si alguna fecha es None
                 fecha_inicio = datetime(2024, 7, 28)
                 fecha_fin = fecha_max_historico
+                st.warning("⚠️ Selecciona ambas fechas para aplicar el filtro personalizado")
+            else:
+                # Convertir date a datetime para consistencia
+                fecha_inicio = datetime.combine(fecha_inicio, datetime.min.time())
+                fecha_fin = datetime.combine(fecha_fin, datetime.max.time())
+                
+                # Validación: fecha inicio debe ser menor que fecha fin
+                if fecha_inicio >= fecha_fin:
+                    st.error("⚠️ La fecha de inicio debe ser anterior a la fecha fin")
+                    # Usar valores por defecto si hay error
+                    fecha_inicio = datetime(2024, 7, 28)
+                    fecha_fin = fecha_max_historico
         else:
             # Usar presets
             fecha_inicio, fecha_fin = obtener_rango_fecha_preset(tipo_periodo)

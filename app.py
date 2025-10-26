@@ -223,8 +223,8 @@ with tab_overview:
             )
         elif cambio_ingresos < -10:
             insights_ejecutivos.append(
-                f"⚠️ **Alerta de Desaceleración:** Los ingresos han disminuido un {abs(cambio_ingresos):.1f}% comparado con el período anterior. "
-                f"Se recomienda revisar estrategias de marketing, competencia y satisfacción del cliente."
+                f"📊 **Análisis de Variación:** Los ingresos muestran una variación de {cambio_ingresos:+.1f}% comparado con el período anterior, "
+                f"totalizando ${ingresos_totales:,.0f}. Consulta el tab 'Rendimiento & Análisis Temporal' para análisis detallado de tendencias."
             )
         else:
             insights_ejecutivos.append(
@@ -1167,7 +1167,7 @@ with tab_clientes:
                     
                     st.markdown("""
                     <div style='background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); padding: 1.5rem; border-radius: 12px; color: white; margin-bottom: 1rem;'>
-                        <h4 style='margin: 0 0 0.75rem 0; color: white !important;'>⚠️ Clientes En Riesgo</h4>
+                        <h4 style='margin: 0 0 0.75rem 0; color: white !important;'>🔍 Clientes En Riesgo</h4>
                         <p style='margin: 0; color: rgba(255,255,255,0.95) !important;'>
                             <strong>Perfil:</strong> Clientes valiosos que están perdiendo actividad. Pueden abandonar pronto.<br>
                             <strong>Características:</strong> Recencia media-alta, frecuencia decreciente.<br>

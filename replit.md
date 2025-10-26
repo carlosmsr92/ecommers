@@ -62,6 +62,38 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
   - Zero Timestamp errors
   - Client-ready for international delivery
 
+**Dashboard v4.0 - UX Refinement & Production Polish (October 26, 2025):**
+
+- ✅ **Automatic Alerts Completely Removed:**
+  - **REASON:** High data volatility across 16 years of historical data makes automatic threshold-based alerts unreliable
+  - **REMOVED:** "⚠️ **Alerta de Desaceleración:**" replaced with neutral "📊 **Análisis de Variación:**"
+  - **UPDATED:** "⚠️ Clientes En Riesgo" changed to "🔍 Clientes En Riesgo" (RFM segment title)
+  - **RESULT:** Clean, professional dashboard without automatic warning banners
+
+- ✅ **Custom Date Selector Implemented:**
+  - **NEW FEATURE:** "Personalizado" option with interactive calendar pickers (st.date_input)
+  - **DATE RANGE:** Min: 29/10/2015, Max: 26/10/2025 (full historical data range)
+  - **VALIDATION:** Prevents None-type errors with graceful fallback to defaults
+  - **UX:** Side-by-side date inputs (Desde/Hasta) with clear labels and help text
+
+- ✅ **Robust Date Handling:**
+  - **FIX:** Added None checks before datetime.combine() to prevent TypeError exceptions
+  - **VALIDATION:** Fecha inicio must be < fecha fin with user-friendly error messages
+  - **FALLBACK:** Automatic default dates if user interaction is incomplete
+  - **STABILITY:** Zero TypeError exceptions in server logs confirmed by e2e testing
+
+- ✅ **Production Environment:**
+  - **CLEANED:** Removed prophet dependency from requirements.txt
+  - **GITIGNORE:** Updated to exclude attached_assets/, temp files, cache
+  - **README:** Comprehensive v4.0 documentation with Streamlit Cloud deployment instructions
+  - **AUTHOR:** Signature "CMSR92" present throughout platform
+
+- ✅ **End-to-End Testing:**
+  - **VALIDATED:** Custom date selector functionality with calendar interaction
+  - **CONFIRMED:** Zero automatic alerts ("Alerta" or "⚠️") in dashboard insights
+  - **TESTED:** All 9 tabs functional, filters apply correctly, no server exceptions
+  - **STATUS:** 100% production-ready, client/executive-ready deliverable
+
 ## External Dependencies
 *   **Streamlit:** Interactive dashboard development.
 *   **FastAPI:** RESTful API.
