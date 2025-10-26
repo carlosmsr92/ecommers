@@ -795,7 +795,11 @@ with tab_productos:
     
     st.subheader("Top 20 Productos por Ingresos")
     
-    top_productos = datos_filtrados.groupby(['product_id', 'product_name']).agg({
+    # Filtrar productos no significativos (costos de envío, productos genéricos)
+    productos_excluir = ['Manual', 'POSTAGE', 'DOTCOM POSTAGE', 'Adjust bad debt', 'BANK CHARGES']
+    datos_productos_reales = datos_filtrados[~datos_filtrados['product_name'].isin(productos_excluir)]
+    
+    top_productos = datos_productos_reales.groupby(['product_id', 'product_name', 'category']).agg({
         'total_amount_usd': 'sum',
         'transaction_id': 'count',
         'quantity': 'sum',
@@ -807,12 +811,12 @@ with tab_productos:
         x='total_amount_usd',
         y='product_name',
         orientation='h',
-        title='Top 20 Productos por Ingresos',
+        title='Top 20 Productos por Ingresos (excl. envíos)',
         labels=LABELS,
-        color='profit',
-        color_continuous_scale='RdYlGn'
+        color='category',
+        color_discrete_sequence=px.colors.qualitative.Set2
     )
-    fig_productos.update_traces(hovertemplate='<b>%{y}</b><br>Ingresos: $%{x:,.0f}<br>Beneficio: $%{marker.color:,.0f}<extra></extra>')
+    fig_productos.update_traces(hovertemplate='<b>%{y}</b><br>Categoría: %{marker.color}<br>Ingresos: $%{x:,.0f}<extra></extra>')
     fig_productos.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_productos, use_container_width=True)
     
@@ -1805,11 +1809,15 @@ with tab_operacional:
     
     st.subheader("🏆 Top Productos por Rotación")
     
-    rotacion_productos = datos_filtrados.groupby('product_name').agg({
+    # Filtrar productos no significativos (mismos que en Top 20)
+    productos_excluir = ['Manual', 'POSTAGE', 'DOTCOM POSTAGE', 'Adjust bad debt', 'BANK CHARGES']
+    datos_operacionales_reales = datos_filtrados[~datos_filtrados['product_name'].isin(productos_excluir)]
+    
+    rotacion_productos = datos_operacionales_reales.groupby(['product_name', 'category']).agg({
         'quantity': 'sum',
         'transaction_id': 'count'
     }).reset_index()
-    rotacion_productos.columns = ['producto', 'unidades_vendidas', 'frecuencia']
+    rotacion_productos.columns = ['producto', 'categoria', 'unidades_vendidas', 'frecuencia']
     rotacion_productos['velocidad'] = rotacion_productos['unidades_vendidas'] * rotacion_productos['frecuencia']
     top_rotacion = rotacion_productos.nlargest(15, 'velocidad')
     
@@ -1818,12 +1826,12 @@ with tab_operacional:
         x='velocidad',
         y='producto',
         orientation='h',
-        title='Top 15 Productos por Velocidad de Rotación',
+        title='Top 15 Productos por Velocidad de Rotación (excl. envíos)',
         labels=LABELS,
-        color='unidades_vendidas',
-        color_continuous_scale='Viridis'
+        color='categoria',
+        color_discrete_sequence=px.colors.qualitative.Set2
     )
-    fig_rotacion.update_traces(hovertemplate='<b>%{y}</b><br>Velocidad: %{x:,.0f}<br>Unidades: %{marker.color:,.0f}<extra></extra>')
+    fig_rotacion.update_traces(hovertemplate='<b>%{y}</b><br>Categoría: %{marker.color}<br>Velocidad: %{x:,.0f}<extra></extra>')
     fig_rotacion.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_rotacion, use_container_width=True)
 
