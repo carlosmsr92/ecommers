@@ -36,6 +36,18 @@ This project delivers a professional Business Intelligence dashboard for global 
 - ✅ **Visual Consistency:** Standardized color palette, professional labels, clear legends, formatted numbers across all visualizations
 - ✅ **E2E Testing Completed:** Full Playwright validation of all 9 tabs, insights system, KPI explanations, churn/clustering enhancements, and professional UX elements
 
+**Dashboard v2.2 - Complete Spanish Internationalization (October 26, 2025):**
+- ✅ **Category Translation System:** Created utils/traducciones.py with comprehensive CATEGORIAS_ES dictionary (20+ mappings: Electronics→Electrónica, Books→Libros, Clothing→Ropa, etc.)
+- ✅ **Automatic Data Translation:** Categories and subcategories automatically translated at data load time via aplicar_traducciones_df() in utils/data_loader_pg.py
+- ✅ **Spanish Filters:** Sidebar filters display all categories in professional Spanish (Electrónica, Libros, Deportes, Juguetes, Belleza, etc.)
+- ✅ **Professional Chart Labels:** Centralized LABELS_PROFESIONALES dictionary with 50+ mappings eliminating technical field names from all visualizations
+- ✅ **Professional Hovertemplates:** All 20+ charts updated with formatted tooltips: "Categoría: Electrónica, Ingresos: $7,258,482" instead of "category=electronics, total_amount_usd=7258482"
+- ✅ **Spanish Insights:** Executive insights automatically use translated categories ("Categoría Líder: Electrónica domina el portafolio con 45.2%")
+- ✅ **Number Formatting:** Consistent professional formatting throughout: $1,234,567 (thousand separators), 12.3% (percentages)
+- ✅ **Zero Mix Languages:** 100% Spanish interface with no English category names or technical column names visible in any chart, tooltip, or filter
+- ✅ **Translation Architecture:** Single-pass translation at data load ensures consistency across all tabs, filters, and visualizations without performance impact
+- ✅ **Case-Insensitive Matching:** Robust traducir_categoria() function handles capitalization variations (electronics/Electronics/ELECTRONICS → Electrónica)
+
 ## User Preferences
 I prefer detailed explanations. Do not make changes to the folder Z. Do not make changes to the file Y.
 
