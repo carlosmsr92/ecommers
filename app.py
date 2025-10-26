@@ -494,6 +494,7 @@ with tab_geografia:
             title='Distribución de Ingresos (Top 10 + Otros)',
             hole=0.4
         )
+        fig_pie.update_traces(hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<br>Porcentaje: %{percent}<extra></extra>')
         fig_pie.update_layout(height=400)
         st.plotly_chart(fig_pie, use_container_width=True)
 
@@ -645,15 +646,18 @@ with tab_forecasting:
     
     with col_dist1:
         st.subheader("Distribución de Ingresos por Día de Semana")
+        from utils.traducciones import traducir_dia_semana
         temp_df['dia_semana'] = pd.to_datetime(temp_df['date']).dt.day_name()
         ingresos_dia = temp_df.groupby('dia_semana')['total_amount_usd'].sum().reset_index()
         dias_orden = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         ingresos_dia['dia_semana'] = pd.Categorical(ingresos_dia['dia_semana'], categories=dias_orden, ordered=True)
         ingresos_dia = ingresos_dia.sort_values('dia_semana')
+        # Traducir días al español
+        ingresos_dia['dia_semana_es'] = ingresos_dia['dia_semana'].apply(traducir_dia_semana)
         
         fig_dias = px.bar(
             ingresos_dia,
-            x='dia_semana',
+            x='dia_semana_es',
             y='total_amount_usd',
             title='Ingresos por Día de la Semana',
             labels=LABELS,
@@ -714,6 +718,7 @@ with tab_productos:
         color='profit',
         color_continuous_scale='RdYlGn'
     )
+    fig_productos.update_traces(hovertemplate='<b>%{y}</b><br>Ingresos: $%{x:,.0f}<br>Beneficio: $%{marker.color:,.0f}<extra></extra>')
     fig_productos.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_productos, use_container_width=True)
     
@@ -760,6 +765,7 @@ with tab_productos:
             color='margen_%',
             color_continuous_scale='RdYlGn'
         )
+        fig_margen.update_traces(hovertemplate='<b>%{x}</b><br>Margen: %{y:.1f}%<extra></extra>')
         fig_margen.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig_margen, use_container_width=True)
     
@@ -807,7 +813,7 @@ with tab_productos:
     )
     
     fig_bcg.update_traces(
-        hovertemplate='<b>%{customdata[0]}</b><br>Cuadrante: %{marker.color}<br>Ingresos: %{customdata[1]}<br>Frecuencia: %{customdata[2]}<extra></extra>'
+        hovertemplate='<b>%{customdata[0]}</b><br>Ingresos: %{customdata[1]}<br>Frecuencia: %{customdata[2]} pedidos<extra></extra>'
     )
     
     fig_bcg.add_hline(y=mediana_ingresos, line_dash="dash", line_color="gray", annotation_text="Mediana Ingresos")
@@ -850,6 +856,7 @@ with tab_clientes:
             color='cantidad',
             color_continuous_scale='Viridis'
         )
+        fig_rfm.update_traces(hovertemplate='<b>%{x}</b><br>Clientes: %{y:,}<extra></extra>')
         fig_rfm.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig_rfm, use_container_width=True)
     
@@ -861,6 +868,7 @@ with tab_clientes:
             title='Proporción de Segmentos',
             hole=0.4
         )
+        fig_rfm_pie.update_traces(hovertemplate='<b>%{label}</b><br>Clientes: %{value:,}<br>Porcentaje: %{percent}<extra></extra>')
         fig_rfm_pie.update_layout(height=400)
         st.plotly_chart(fig_rfm_pie, use_container_width=True)
     
@@ -883,6 +891,7 @@ with tab_clientes:
         labels=LABELS,
         color_discrete_sequence=['#667eea']
     )
+    fig_ltv_dist.update_traces(hovertemplate='LTV: $%{x:,.0f}<br>Clientes: %{y:,}<extra></extra>')
     fig_ltv_dist.update_layout(height=400, showlegend=False)
     st.plotly_chart(fig_ltv_dist, use_container_width=True)
     
@@ -1070,6 +1079,7 @@ with tab_clientes:
             labels=LABELS,
             color_discrete_sequence=['#EF4444']
         )
+        fig_churn.update_traces(hovertemplate='Probabilidad: %{x:.1%}<br>Clientes: %{y:,}<extra></extra>')
         fig_churn.update_layout(height=400)
         st.plotly_chart(fig_churn, use_container_width=True)
     
@@ -1091,6 +1101,7 @@ with tab_clientes:
             color='riesgo',
             color_discrete_map={'Alto (>70%)': '#EF4444', 'Medio (40-70%)': '#F59E0B', 'Bajo (<40%)': '#10B981'}
         )
+        fig_churn_pie.update_traces(hovertemplate='<b>%{label}</b><br>Clientes: %{value:,}<br>Porcentaje: %{percent}<extra></extra>')
         fig_churn_pie.update_layout(height=400)
         st.plotly_chart(fig_churn_pie, use_container_width=True)
     
@@ -1140,6 +1151,7 @@ with tab_canal:
             title='Distribución de Ingresos por Dispositivo',
             hole=0.4
         )
+        fig_dispositivos.update_traces(hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<br>Porcentaje: %{percent}<extra></extra>')
         fig_dispositivos.update_layout(height=400)
         st.plotly_chart(fig_dispositivos, use_container_width=True)
     
@@ -1156,6 +1168,7 @@ with tab_canal:
             color='total_amount_usd',
             color_continuous_scale='Viridis'
         )
+        fig_trafico.update_traces(hovertemplate='<b>%{x}</b><br>Ingresos: $%{y:,.0f}<extra></extra>')
         fig_trafico.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig_trafico, use_container_width=True)
     
@@ -1177,7 +1190,11 @@ with tab_canal:
         color_continuous_scale='Blues',
         text='transacciones'
     )
-    fig_pagos.update_traces(texttemplate='%{text} txns', textposition='outside')
+    fig_pagos.update_traces(
+        texttemplate='%{text} txns', 
+        textposition='outside',
+        hovertemplate='<b>%{x}</b><br>Ingresos: $%{y:,.0f}<br>Transacciones: %{text:,}<extra></extra>'
+    )
     fig_pagos.update_layout(height=400, showlegend=False)
     st.plotly_chart(fig_pagos, use_container_width=True)
     
