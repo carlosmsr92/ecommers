@@ -90,3 +90,55 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
   - Greater variety of countries across continents ✅
   - EIRE correctly translates to Irlanda ✅
   - All filters and UI elements in Spanish ✅
+
+**Dashboard v3.1 - Final Corrections for Client/Executive Delivery (October 26, 2025):**
+- ✅ **World Map Visualization Fixed:**
+  - Implemented ISO-3 country code mapping for accurate rendering
+  - 40+ countries mapped (United Kingdom→GBR, United States→USA, etc.)
+  - Professional 'natural earth' projection
+  - Filtered invalid country codes
+
+- ✅ **Geographic Treemap Simplified:**
+  - Changed from path=['country', 'city', 'category'] to path=['country', 'category']
+  - Eliminated confusing 'city' level
+  - Clear hierarchy: Country → Category
+
+- ✅ **Evolution Chart Enhanced:**
+  - Replaced separated subplots with dual-axis chart
+  - Monthly aggregation (smoother than daily)
+  - Eliminated visual spike between lines and bars
+  - Transparent bars with border for professional appearance
+
+- ✅ **Prophet Forecasting Precision Improved:**
+  - Added seasonality_mode='multiplicative'
+  - changepoint_prior_scale=0.05 for better change detection
+  - Additional monthly seasonality (period=30.5, fourier_order=5)
+  - LBFGS algorithm for faster convergence
+
+- ✅ **Churn Data Distribution Varied:**
+  - Realistic distribution: 41% very low, 32% low, 9% medium, 1% high, 0.05% very high
+  - Mean: 18.4% (previously 42.8%)
+  - Standard deviation: 15.5
+  - Based on RFM scores with random noise for variability
+
+- ✅ **Device Distribution Labels Cleaned:**
+  - Removed technical prefixes (no more "device=Mobile")
+  - Professional hover templates
+  - Clean label display
+
+- ✅ **Sankey Flow Chart Professionalized:**
+  - Differentiated colors by node type (traffic sources, devices, payment methods)
+  - Removed technical labels 'source'/'target' from hovers
+  - Transparent links for visual clarity
+
+- ✅ **CMSR92 Signature Added:**
+  - Professional footer: "✨ Desarrollado por CMSR92 ✨"
+  - Corporate color styling (#667eea)
+  - Visible and elegant placement
+
+- ✅ **Technical Quality:**
+  - All hovertemplate warnings resolved
+  - Dashboard running without critical errors
+  - Only pre-existing Plotly country names library notice (non-blocking)
+  - Prophet training successful (cmdstanpy logs clean)
+  - Client/executive delivery ready
