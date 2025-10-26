@@ -9,12 +9,12 @@ def load_data_from_postgres():
     """Carga datos desde archivos unificados (Parquet) o PostgreSQL"""
     import os
     
-    # Verificar si existen archivos unificados (763K transacciones, 16 años)
+    # Verificar si existen archivos unificados
     use_unified = os.path.exists('data/transactions_unified.parquet')
     
     if use_unified:
         try:
-            # Cargar desde archivos unificados (mucho más rápido)
+            # Cargar desde archivos unificados
             transactions_df = pd.read_parquet('data/transactions_unified.parquet')
             customers_df = pd.read_parquet('data/customers_unified.parquet')
             products_df = pd.read_parquet('data/products_unified.parquet')
@@ -26,13 +26,10 @@ def load_data_from_postgres():
             if 'launch_date' in products_df.columns:
                 products_df['launch_date'] = pd.to_datetime(products_df['launch_date'])
             
-            # Añadir mensaje informativo
-            st.info(f"📊 Usando base de datos unificada: {len(transactions_df):,} transacciones cubriendo {(transactions_df['date'].max().year - transactions_df['date'].min().year + 1)} años ({transactions_df['date'].min().year}-{transactions_df['date'].max().year})")
-            
             return transactions_df, customers_df, products_df
             
         except Exception as e:
-            st.warning(f"Error cargando archivos unificados, intentando PostgreSQL: {str(e)}")
+            pass
     
     # Fallback a PostgreSQL
     engine = get_engine()
@@ -56,49 +53,14 @@ def load_data_from_postgres():
         return transactions_df, customers_df, products_df
         
     except Exception as e:
-        st.error(f"Error cargando datos desde PostgreSQL: {str(e)}")
+        st.error(f"Error loading data: {str(e)}")
         return None, None, None
 
 @st.cache_data
 def load_or_generate_data():
-    """Carga desde PostgreSQL o genera datos si no existen"""
-    from utils.data_loader import load_or_generate_data as load_parquet
-    import os
-    
-    # Intentar cargar desde PostgreSQL
-    engine = get_engine()
-    
-    try:
-        # Verificar si las tablas existen y tienen datos
-        with engine.connect() as conn:
-            result = conn.execute(text("SELECT COUNT(*) FROM transactions"))
-            count = result.scalar()
-            
-            if count > 0:
-                # Datos existen en PostgreSQL
-                return load_data_from_postgres()
-    except:
-        pass
-    
-    # Si no hay datos en PostgreSQL, generar y migrar
-    st.info("Inicializando base de datos PostgreSQL...")
-    
-    # Generar datos en Parquet primero
-    transactions_df, customers_df, products_df = load_parquet()
-    
-    # Migrar a PostgreSQL
-    from database.migration import migrate_data_to_postgres
-    
-    with st.spinner('Migrando datos a PostgreSQL...'):
-        success = migrate_data_to_postgres()
-    
-    if success:
-        st.success("✅ Datos migrados a PostgreSQL exitosamente")
-        # Recargar desde PostgreSQL
-        return load_data_from_postgres()
-    else:
-        st.warning("⚠️ Usando datos desde archivos Parquet")
-        return transactions_df, customers_df, products_df
+    """Carga datos desde fuente disponible"""
+    # Cargar directamente sin mensajes
+    return load_data_from_postgres()
 
 def filter_data(df, filters):
     """Aplica filtros al DataFrame"""
