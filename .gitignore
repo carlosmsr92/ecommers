@@ -27,6 +27,9 @@ uv.lock
 *.log
 /tmp/
 
+# Temporary assets
+attached_assets/
+
 # IDE
 .vscode/
 .idea/

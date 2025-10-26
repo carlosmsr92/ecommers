@@ -39,17 +39,59 @@ def crear_filtros_sidebar(transacciones_df):
     with st.sidebar.expander("📅 PERIODO DE ANÁLISIS", expanded=True):
         tipo_periodo = st.selectbox(
             "Seleccionar periodo",
-            ['Últimos 7 Días', 'Últimos 30 Días', 'Últimos 90 Días', 'Último Año', 'Todo el Histórico'],
-            index=2,
+            ['Personalizado', 'Últimos 7 Días', 'Últimos 30 Días', 'Últimos 90 Días', 'Último Año', 'Todo el Histórico'],
+            index=3,
             help="Selecciona el rango temporal para el análisis"
         )
         
-        fecha_inicio, fecha_fin = obtener_rango_fecha_preset(tipo_periodo)
+        # Fechas límite del histórico
+        fecha_min_historico = datetime(2015, 10, 29)
+        fecha_max_historico = datetime(2025, 10, 26)
+        
+        if tipo_periodo == 'Personalizado':
+            # Calendarios desplegables para selección personalizada
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                fecha_inicio = st.date_input(
+                    "Desde",
+                    value=datetime(2024, 7, 28),
+                    min_value=fecha_min_historico,
+                    max_value=fecha_max_historico,
+                    format="DD/MM/YYYY",
+                    help="Fecha inicio del análisis"
+                )
+            
+            with col2:
+                fecha_fin = st.date_input(
+                    "Hasta",
+                    value=fecha_max_historico,
+                    min_value=fecha_min_historico,
+                    max_value=fecha_max_historico,
+                    format="DD/MM/YYYY",
+                    help="Fecha fin del análisis"
+                )
+            
+            # Convertir date a datetime para consistencia
+            fecha_inicio = datetime.combine(fecha_inicio, datetime.min.time())
+            fecha_fin = datetime.combine(fecha_fin, datetime.max.time())
+            
+            # Validación: fecha inicio debe ser menor que fecha fin
+            if fecha_inicio >= fecha_fin:
+                st.error("⚠️ La fecha de inicio debe ser anterior a la fecha fin")
+                # Usar valores por defecto si hay error
+                fecha_inicio = datetime(2024, 7, 28)
+                fecha_fin = fecha_max_historico
+        else:
+            # Usar presets
+            fecha_inicio, fecha_fin = obtener_rango_fecha_preset(tipo_periodo)
+        
         filtros['fecha_inicio'] = fecha_inicio
         filtros['fecha_fin'] = fecha_fin
         
-        st.markdown(f"**Desde:** {fecha_inicio.strftime('%d/%m/%Y')}")
-        st.markdown(f"**Hasta:** {fecha_fin.strftime('%d/%m/%Y')}")
+        # Mostrar resumen del rango seleccionado
+        duracion_dias = (fecha_fin - fecha_inicio).days
+        st.caption(f"📊 Analizando {duracion_dias} días de datos")
     
     with st.sidebar.expander("🌍 GEOGRAFÍA"):
         paises_disponibles = sorted(transacciones_df['country'].unique().tolist())

@@ -746,18 +746,6 @@ with tab_rendimiento:
         )
         
         st.plotly_chart(fig_tendencias, use_container_width=True)
-        
-        # Insights automáticos de tendencias
-        if f'ma_{ventana_corta}' in serie_temporal_sorted.columns and f'ma_{ventana_larga}' in serie_temporal_sorted.columns:
-            ultima_corta = serie_temporal_sorted[f'ma_{ventana_corta}'].iloc[-1]
-            ultima_larga = serie_temporal_sorted[f'ma_{ventana_larga}'].iloc[-1]
-            
-            if ultima_corta > ultima_larga * 1.05:
-                st.success(f"✅ **Tendencia Positiva:** La tendencia de {label_corta} está {((ultima_corta/ultima_larga - 1) * 100):.1f}% por encima de la tendencia de {label_larga}, indicando aceleración en el crecimiento.")
-            elif ultima_corta < ultima_larga * 0.95:
-                st.warning(f"⚠️ **Alerta de Desaceleración:** La tendencia de {label_corta} está {((1 - ultima_corta/ultima_larga) * 100):.1f}% por debajo de la tendencia de {label_larga}, sugiriendo una desaceleración reciente.")
-            else:
-                st.info(f"ℹ️ **Tendencia Estable:** Las tendencias de {label_corta} y {label_larga} están alineadas, indicando un crecimiento constante y predecible.")
     
     col_dist1, col_dist2 = st.columns(2)
     

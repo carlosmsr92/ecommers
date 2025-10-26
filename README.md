@@ -1,330 +1,271 @@
-# 📊 Analytics Ecommerce Global - Business Intelligence Dashboard
+# 📊 Analytics Ecommerce Global - Dashboard v4.0
 
-**Desarrollado por:** CMSR92  
-**Versión:** 3.1  
-**Última actualización:** Octubre 26, 2025
+**Dashboard profesional de Business Intelligence con Machine Learning y Análisis Estadístico para E-commerce Global**
 
----
-
-## 🎯 Descripción del Proyecto
-
-Plataforma profesional de **Business Intelligence** de nivel enterprise que combina **Big Data**, **Machine Learning** e **Inteligencia Artificial** para análisis predictivo avanzado de ecommerce global. 
-
-Este dashboard analiza **472,211 transacciones** que abarcan **16 años** (2010-2025), con distribución global realista y datos completamente internacionalizados en español profesional.
-
-### 🌟 Características Destacadas
-
-- ✅ **Interfaz 100% en Español**: Todas las etiquetas, filtros, insights y traducciones
-- ✅ **Datos Globales Realistas**: Estados Unidos (19.13%), Reino Unido (24%), distribución balanceada
-- ✅ **472K+ Transacciones**: Datos reales UK + sintéticos con distribuciones realistas
-- ✅ **9 Pestañas de Análisis**: Desde resumen ejecutivo hasta ML avanzado
-- ✅ **Machine Learning Integrado**: Prophet, K-Means, Isolation Forest, XGBoost
-- ✅ **Visualizaciones Profesionales**: Sin etiquetas técnicas, listas para presentación
-- ✅ **API RESTful Completa**: FastAPI con documentación Swagger
-- ✅ **Firma Digital**: Desarrollado por CMSR92
+> Autor: **CMSR92**  
+> Versión: **4.0** (Octubre 2025)  
+> Plataforma: Streamlit + FastAPI + PostgreSQL
 
 ---
 
-## 🏗️ Stack Tecnológico
+## 🎯 Descripción
 
-### Frontend
-- **Streamlit** - Dashboard interactivo responsive
-- **Plotly** - Visualizaciones interactivas profesionales
-- **Folium** - Mapas geoespaciales con ISO-3
+Plataforma avanzada de Business Intelligence que analiza más de **774,000 transacciones** (2015-2025) con capacidades de:
 
-### Backend
-- **FastAPI** - API RESTful de alto rendimiento
-- **PostgreSQL** - Base de datos relacional (opcional)
-- **Parquet** - Almacenamiento optimizado de datos
-
-### Machine Learning & AI
-- **Prophet (Meta)** - Forecasting con estacionalidad multiplicativa
-- **Scikit-learn** - Clustering RFM, detección de anomalías
-- **XGBoost** - Modelos predictivos avanzados
-
-### Exportación
-- **ReportLab** - Reportes PDF profesionales
-- **OpenPyXL** - Exportación Excel (8 hojas)
+- **9 Tabs de Análisis** interactivos y profesionales
+- **4 Modelos de Machine Learning** (Isolation Forest, K-Means, Correlación, Recomendaciones)
+- **Análisis Estadístico Robusto** con promedios móviles e indicadores de crecimiento
+- **100% Internacionalizado** en español profesional
+- **Filtros Avanzados** multi-dimensionales con selector personalizado de fechas
 
 ---
 
-## 📊 Dataset
+## 🚀 Deployment en Streamlit Cloud
 
-### Composición de Datos
-
-**472,211 transacciones** (2010-2025):
-- 53,036 transacciones reales (UK Online Retail Dataset)
-- 419,175 transacciones sintéticas con distribuciones realistas
-
-**Distribución Global Realista:**
-- 🇺🇸 Estados Unidos: 19.13%
-- 🇬🇧 Reino Unido: 24.00%
-- 🇩🇪 Alemania: 9.81%
-- 🇫🇷 Francia: 7.30%
-- 🇨🇳 China: 7.13%
-- 40+ países más
-
-**Categorías Balanceadas:**
-- 🏠 Hogar: 34.13%
-- 📱 Electrónica: 14.25%
-- 👗 Moda: 14.89%
-- 🛒 Comestibles: 11.09%
-- 📚 Libros: 8.72%
-- 🧸 Juguetes: 7.02%
-
-**Métricas del Cliente:**
-- 4,338 clientes únicos
-- Segmentación RFM (9 segmentos)
-- Churn probability (media: 18.4%)
-- Lifetime Value calculado
-
----
-
-## 🎨 Características del Dashboard
-
-### 1. Navegación por Pestañas (9 Secciones)
-
-| Pestaña | Contenido |
-|---------|-----------|
-| 📊 **Resumen General** | 8 KPIs core, evolución temporal, insights ejecutivos |
-| 🌍 **Análisis Geográfico** | Mapa mundial ISO-3, treemap País→Categoría |
-| 📈 **Forecasting & Tendencias** | Prophet 90 días, análisis de tendencias |
-| 📦 **Análisis de Productos** | BCG Matrix, top productos, rendimiento |
-| 👥 **Segmentación de Clientes** | RFM, clustering K-Means, análisis de cohortes |
-| 📱 **Optimización de Canales** | Dispositivos, tráfico, Sankey profesional |
-| 🤖 **ML & IA Insights** | Anomalías, clustering 3D, recomendaciones |
-| 💰 **Análisis Financiero** | P&L, waterfall, métricas financieras |
-| ⚙️ **Análisis Operacional** | KPIs operativos, eficiencia |
-
-### 2. Sistema de Filtros Dinámicos
-
-**Filtros Colapsables en Sidebar:**
-- 📅 Rango de fechas personalizado
-- 🌍 Geografía (países, regiones, ciudades)
-- 📦 Productos (categorías traducidas)
-- 👥 Segmentos de clientes
-- 💳 Canales y métodos de pago
-- 📱 Tipos de dispositivo
-- 💰 Rango de precios
-- 🤖 Activación de predicciones ML
-
-### 3. Visualizaciones Profesionales
-
-**Correcciones v3.1 para Cliente/Directivos:**
-- ✅ Mapa mundial con códigos ISO-3 (renderizado correcto)
-- ✅ Treemap simplificado (País → Categoría, sin city)
-- ✅ Gráfico evolución con eje secundario (sin pico anormal)
-- ✅ Prophet con estacionalidad multiplicativa (precisión mejorada)
-- ✅ Churn con distribución variada (41% muy bajo, 32% bajo)
-- ✅ Etiquetas de dispositivos limpias (sin "device=")
-- ✅ Sankey con colores diferenciados (sin "source"/"target")
-- ✅ Firma CMSR92 visible y profesional
-
-### 4. Machine Learning Integrado
-
-**Modelos Implementados:**
-- **Prophet Forecasting**: 90 días con intervalo confianza 80%/95%
-- **K-Means Clustering**: 4 segmentos RFM (Champions, Loyal, At Risk, Lost)
-- **Isolation Forest**: Detección de anomalías en transacciones
-- **XGBoost**: Predicción de churn y recomendaciones
-- **Market Basket**: Análisis de productos relacionados
-
-**Métricas de Evaluación:**
-- MAPE, RMSE, R² para forecasting
-- Silhouette Score para clustering
-- Precision/Recall para clasificación
-
-### 5. Internacionalización Completa
-
-**Sistema de Traducciones Automáticas:**
-- Categorías: Home→Hogar, Electronics→Electrónica
-- Países: EIRE→Irlanda, United Kingdom→Reino Unido
-- Tráfico: Organic→Orgánico, Paid Ads→Anuncios Pagados
-- Dispositivos: Mobile→Móvil, Desktop→Escritorio
-- Segmentos: New→Nuevo, VIP→VIP, Regular→Regular
-- Métodos de pago traducidos
-- Días de semana en español
-
----
-
-## 🚀 Instalación y Ejecución
-
-### Requisitos Previos
+### Paso 1: Preparar Repositorio Git
 
 ```bash
-Python 3.11+
+# Clonar o crear repositorio
+git clone https://github.com/tu-usuario/analytics-ecommerce.git
+cd analytics-ecommerce
+
+# Agregar archivos
+git add .
+git commit -m "Dashboard v4.0 - Production Ready"
+git push origin main
 ```
+
+### Paso 2: Configurar en Streamlit Cloud
+
+1. Ve a [share.streamlit.io](https://share.streamlit.io)
+2. Conecta tu cuenta de GitHub
+3. Click en "New app"
+4. Selecciona:
+   - **Repository:** `tu-usuario/analytics-ecommerce`
+   - **Branch:** `main`
+   - **Main file path:** `app.py`
+5. Click en "Deploy"
+
+### Paso 3: Configuración Avanzada (Opcional)
+
+En "Advanced settings":
+- **Python version:** 3.11
+- **Requirements file:** `requirements.txt`
+
+---
+
+## 💻 Instalación Local
+
+### Requisitos
+
+- Python 3.11+
+- PostgreSQL (opcional, usa Parquet por defecto)
 
 ### Instalación
 
 ```bash
-# Clonar el repositorio
-git clone <tu-repositorio>
-cd analytics-ecommerce-global
+# 1. Clonar repositorio
+git clone https://github.com/tu-usuario/analytics-ecommerce.git
+cd analytics-ecommerce
 
-# Instalar dependencias
+# 2. Crear entorno virtual
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+
+# 3. Instalar dependencias
 pip install -r requirements.txt
+
+# 4. Ejecutar Dashboard
+streamlit run app.py --server.port 5000
+
+# 5. Ejecutar API (opcional, en otra terminal)
+python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 ```
 
-### Ejecución Local
+### Acceso
+
+- **Dashboard:** http://localhost:5000
+- **API Docs:** http://localhost:8000/docs
+
+---
+
+## 📦 Estructura del Proyecto
+
+```
+analytics-ecommerce/
+├── app.py                          # Dashboard principal (Streamlit)
+├── requirements.txt                # Dependencias Python
+├── replit.md                       # Documentación técnica
+│
+├── api/
+│   └── main.py                     # API RESTful (FastAPI)
+│
+├── data/                           # Datos (Parquet optimizado)
+│   ├── transactions_unified.parquet
+│   ├── customers_unified.parquet
+│   └── products_unified.parquet
+│
+├── utils/                          # Módulos auxiliares
+│   ├── data_loader_pg.py          # Carga de datos
+│   ├── filtros.py                 # Sistema de filtros
+│   ├── traducciones.py            # Internacionalización
+│   └── ui_components.py           # Componentes UI
+│
+└── .streamlit/
+    └── config.toml                # Configuración Streamlit
+```
+
+---
+
+## 🎨 Features Principales
+
+### 1. **Tabs de Análisis**
+
+| Tab | Descripción |
+|-----|-------------|
+| 🏠 **Resumen General** | KPIs principales, insights ejecutivos, evolución temporal |
+| 🌍 **Análisis Geográfico** | Mapas interactivos, distribución por país/región |
+| 📈 **Rendimiento & Análisis Temporal** | Indicadores de crecimiento, promedios móviles, momentum |
+| 📦 **Análisis de Productos** | BCG Matrix, categorías top, subcategorías |
+| 👥 **Segmentación de Clientes** | RFM, K-Means clustering, análisis de cohortes |
+| 📱 **Análisis de Canal** | Diagramas Sankey, conversión por dispositivo |
+| 🤖 **ML & IA Insights** | Isolation Forest, anomalías, correlaciones |
+| 💰 **Análisis Financiero** | P&L waterfall, márgenes, rentabilidad |
+| ⚙️ **Métricas Operacionales** | Logística, cumplimiento, satisfacción |
+
+### 2. **Machine Learning**
+
+- **Isolation Forest:** Detección de anomalías en transacciones
+- **K-Means:** Segmentación automática de clientes (RFM)
+- **Análisis de Correlación:** Identificación de patrones ocultos
+- **Sistema de Recomendaciones:** Productos relacionados
+
+### 3. **Filtros Avanzados**
+
+- **Selector Personalizado de Fechas** (29/10/2015 - 26/10/2025)
+- Presets: 7 días, 30 días, 90 días, 1 año, histórico completo
+- Filtros multidimensionales:
+  - Geografía (países, regiones)
+  - Productos (categorías, subcategorías)
+  - Clientes (segmentos)
+  - Canal (método pago, dispositivo, tráfico)
+  - Rango de precios
+
+---
+
+## 🔧 Configuración
+
+### Variables de Entorno (Opcional)
 
 ```bash
-# Dashboard Streamlit
-streamlit run app.py
+# PostgreSQL (si no usas Parquet)
+DATABASE_URL=postgresql://user:password@host:port/database
 
-# Acceder a: http://localhost:8501
+# API
+SESSION_SECRET=tu_secret_key_aqui
 ```
 
-### Deploy en Streamlit Cloud
+### Configuración de Streamlit
 
-1. Sube el proyecto a GitHub
-2. Conecta tu repositorio en [share.streamlit.io](https://share.streamlit.io)
-3. Selecciona `app.py` como archivo principal
-4. ¡Listo! Tu dashboard estará en línea
+Archivo `.streamlit/config.toml`:
 
----
+```toml
+[server]
+port = 5000
+enableCORS = false
+enableXsrfProtection = true
 
-## 📁 Estructura del Proyecto
-
-```
-analytics-ecommerce-global/
-├── app.py                          # ⭐ Dashboard principal
-├── requirements.txt                # Dependencias Python
-├── .gitignore                      # Archivos ignorados
-├── README.md                       # Esta documentación
-├── replit.md                       # Memoria técnica del proyecto
-│
-├── api/                            # API RESTful
-│   ├── __init__.py
-│   ├── main.py                     # Endpoints principales
-│   └── ml_endpoints.py             # Endpoints ML/IA
-│
-├── data/                           # Datasets optimizados (Parquet)
-│   ├── transactions_unified.parquet # 472K transacciones
-│   ├── customers_unified.parquet    # 4.3K clientes
-│   └── products_unified.parquet     # 29K productos
-│
-├── database/                       # Base de datos (opcional)
-│   ├── __init__.py
-│   ├── schema.py                   # Modelos SQLAlchemy
-│   └── migration_unified.py        # Migraciones
-│
-└── utils/                          # Utilidades
-    ├── data_loader_pg.py           # Cargador con traducciones
-    ├── traducciones.py             # Sistema i18n (ES)
-    ├── ui_components.py            # Componentes UI (KPIs, firma)
-    ├── filtros.py                  # Sistema de filtros
-    ├── export_utils.py             # Exportación Excel/PDF
-    ├── visualizaciones_avanzadas.py # Gráficos especializados
-    ├── data_generator.py           # Generador sintético
-    └── unified_data_integration.py # Integración de datos
+[theme]
+base = "dark"
+primaryColor = "#667eea"
 ```
 
 ---
 
-## 📊 API Endpoints
+## 📊 Datos
 
-### Datos Básicos
-```
-GET /api/kpis                      # KPIs principales
-GET /api/transactions              # Transacciones
-GET /api/customers                 # Clientes
-GET /api/products                  # Productos
-```
+### Fuentes de Datos
 
-### Analytics Agregados
-```
-GET /api/aggregated/by_country     # Agregación por país
-GET /api/aggregated/by_category    # Agregación por categoría
-GET /api/aggregated/time_series    # Series temporales
-```
+- **Transactions:** 774,434 registros (541,909 reales + 232,525 sintéticos)
+- **Customers:** 100,000 clientes únicos
+- **Products:** 1,000 productos en 15 categorías
+
+### Formato
+
+- **Primario:** Parquet (optimizado para performance)
+- **Backup:** PostgreSQL (opcional)
+
+---
+
+## 🛠️ Tecnologías
+
+### Core
+- **Streamlit** 1.31.0 - Dashboard interactivo
+- **FastAPI** 0.109.0 - API RESTful
+- **Pandas** 2.1.4 - Procesamiento de datos
+- **NumPy** 1.26.3 - Operaciones numéricas
+
+### Visualización
+- **Plotly** 5.18.0 - Gráficos interactivos
+- **Folium** 0.15.1 - Mapas geoespaciales
+- **Matplotlib** 3.8.2 - Gráficos estáticos
+- **Seaborn** 0.13.1 - Visualizaciones estadísticas
 
 ### Machine Learning
-```
-POST /api/ml/forecast              # Forecasting Prophet
-POST /api/ml/cluster_customers     # Clustering K-Means
-GET  /api/ml/churn_risk           # Predicción de churn
-GET  /api/ml/recommendations      # Recomendaciones
-POST /api/ml/anomaly_detection    # Detección de anomalías
-```
+- **Scikit-learn** 1.3.2 - Modelos ML
+- **XGBoost** 2.0.3 - Modelos avanzados
 
-### Exportación
-```
-GET /api/export/excel             # Reporte Excel (8 hojas)
-GET /api/export/pdf               # Reporte PDF profesional
-```
-
-**Documentación interactiva:** `http://localhost:8000/docs`
+### Base de Datos
+- **SQLAlchemy** 2.0.25 - ORM
+- **psycopg2-binary** 2.9.9 - PostgreSQL driver
 
 ---
 
-## 🎯 Casos de Uso
+## 📝 Changelog
 
-1. **Análisis Ejecutivo**: KPIs, tendencias, insights accionables
-2. **Segmentación de Clientes**: RFM, clustering, predicción de churn
-3. **Forecasting de Ventas**: Predicciones Prophet a 90 días
-4. **Análisis Geográfico**: Rendimiento por país y región
-5. **Optimización de Marketing**: Canales, dispositivos, conversión
-6. **Análisis Financiero**: P&L, márgenes, ROI
-7. **Detección de Anomalías**: Transacciones sospechosas
-8. **Análisis de Productos**: BCG Matrix, top performers
+### v4.0 (Octubre 2025)
+- ✅ Eliminado Prophet (Meta) por problemas de compatibilidad
+- ✅ Nuevo sistema de análisis estadístico robusto
+- ✅ Selector personalizado de fechas con calendarios
+- ✅ Eliminadas alertas automáticas de desaceleración
+- ✅ Mejoras de UX y performance
+- ✅ Optimizado para Streamlit Cloud
 
----
-
-## 📈 Versiones
-
-### v3.1 - Correcciones Finales para Cliente (Oct 26, 2025)
-- ✅ Mapa mundial corregido (ISO-3 codes)
-- ✅ Treemap simplificado (sin city)
-- ✅ Gráfico evolución optimizado (eje secundario)
-- ✅ Prophet mejorado (estacionalidad multiplicativa)
-- ✅ Churn variado (distribución realista)
-- ✅ Etiquetas limpias (sin prefijos técnicos)
-- ✅ Sankey profesional (colores + sin labels técnicos)
-- ✅ Firma CMSR92 implementada
-
-### v3.0 - Regeneración de Datos Globales (Oct 26, 2025)
-- 472K transacciones con distribuciones globales realistas
-- Estados Unidos como mercado principal (19.13%)
-- Electrónica como categoría mayor (14.25%)
-- Sistema de traducción extendido
-- RFM y churn mejorados
+### v3.1 (Anterior)
+- Prophet forecasting (deprecado)
+- 9 tabs de análisis
+- ML capabilities básicas
 
 ---
 
-## 🔒 Seguridad
+## 🤝 Contribuciones
 
-- ✅ Variables de entorno para credenciales
-- ✅ Consultas parametrizadas (anti SQL injection)
-- ✅ Validación de inputs en API
-- ✅ CORS configurado
-- ✅ Gestión segura de secretos
-
----
-
-## 👨‍💻 Autor
-
-**CMSR92**  
-*Data Scientist | ML Engineer | BI Specialist*
+Este es un proyecto personal de **CMSR92**. Si encuentras bugs o tienes sugerencias, abre un issue.
 
 ---
 
 ## 📄 Licencia
 
-Proyecto de código abierto bajo licencia MIT.
+Proyecto educativo y demostrativo. Uso permitido con atribución al autor.
 
 ---
 
-## 🙏 Agradecimientos
+## 👤 Autor
 
-- UCI Machine Learning Repository (Online Retail Dataset)
-- Prophet by Meta (forecasting framework)
-- Plotly (interactive visualizations)
-- Streamlit (dashboard framework)
-- Comunidad open source
+**CMSR92**  
+Dashboard Avanzado de Analytics Ecommerce Global  
+Version 4.0 - Octubre 2025
 
 ---
 
-**✨ Desarrollado por CMSR92 ✨**
+## 🔗 Links Útiles
 
-*Dashboard profesional de Business Intelligence para ecommerce global*
+- [Streamlit Documentation](https://docs.streamlit.io)
+- [Plotly Documentation](https://plotly.com/python/)
+- [FastAPI Documentation](https://fastapi.tiangolo.com)
+
+---
+
+**¿Preguntas?** Abre un issue en el repositorio.
+
+**Desarrollado con ❤️ para la comunidad de Data Science y Business Intelligence**
