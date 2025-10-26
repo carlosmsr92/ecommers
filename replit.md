@@ -23,6 +23,19 @@ This project delivers a professional Business Intelligence dashboard for global 
 - ✅ E2E testing completed successfully on all tabs
 - ✅ README v2.0 created in Spanish with complete documentation
 
+**Dashboard v2.1 - Enterprise UX/UI Enhancements (October 26, 2025):**
+- ✅ **Automatic Theme Detection:** CSS `prefers-color-scheme` media queries for automatic light/dark mode based on browser settings (no manual toggle)
+- ✅ **Professional Tab Navigation:** Flex-wrap layout displaying all 9 tabs visibly without horizontal scrolling, responsive design for mobile/tablet
+- ✅ **Contextual Descriptions:** Professional section descriptions at the start of all 9 tabs explaining purpose and interpretation for non-technical users
+- ✅ **Executive Insights System:** Automated insight generation with 4 conditional scenarios (growth, concentration, category leader, efficiency) based on real-time data
+- ✅ **KPI Explanations:** Collapsible expander with clear definitions of all 8 KPIs in accessible Spanish for business stakeholders
+- ✅ **Actionable Recommendations:** 5 cross-referenced recommendations linking tabs for comprehensive analysis (Geography, Forecasting, Segmentation, ML, Financial)
+- ✅ **Enhanced Churn Analysis:** Risk categorization (High >70%, Medium 40-70%, Low <40%) with specific insights and 5 tiered recommendations
+- ✅ **Enhanced Clustering:** 4 visual segment cards (Premium, Active, At Risk, Inactive) with characteristics, profiles, and prioritized strategies
+- ✅ **Robust Error Handling:** Zero-division protection, null-data handling with clear messaging, coherent insights in all edge cases
+- ✅ **Visual Consistency:** Standardized color palette, professional labels, clear legends, formatted numbers across all visualizations
+- ✅ **E2E Testing Completed:** Full Playwright validation of all 9 tabs, insights system, KPI explanations, churn/clustering enhancements, and professional UX elements
+
 ## User Preferences
 I prefer detailed explanations. Do not make changes to the folder Z. Do not make changes to the file Y.
 
