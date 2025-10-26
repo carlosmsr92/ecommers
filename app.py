@@ -605,10 +605,25 @@ with tab_forecasting:
             from prophet import Prophet
             import math
             
+            # Mapear granularidad a frecuencia PRIMERO
+            if granularidad == 'Día':
+                freq = 'D'
+                periods = 90
+            elif granularidad == 'Semana':
+                freq = 'W-MON'  # Semana que empieza en lunes
+                periods = math.ceil(90 / 7)  # ~13 semanas
+            else:  # Mes
+                freq = 'MS'  # Inicio de mes
+                periods = math.ceil(90 / 30)  # ~3 meses
+            
             prophet_df = serie_temporal[['periodo', 'ingresos']].copy()
             prophet_df.columns = ['ds', 'y']
-            # Asegurar conversión correcta a datetime
-            prophet_df['ds'] = pd.to_datetime(prophet_df['ds'].astype(str))
+            # Convertir a datetime manteniendo frecuencia
+            prophet_df['ds'] = pd.to_datetime(prophet_df['ds'])
+            # Ordenar y asegurar frecuencia consistente
+            prophet_df = prophet_df.sort_values('ds').reset_index(drop=True)
+            # Establecer índice con frecuencia para que Prophet lo reconozca
+            prophet_df = prophet_df.set_index('ds').asfreq(freq).reset_index().dropna()
             
             with st.spinner('Entrenando modelo Prophet...'):
                 modelo = Prophet(
@@ -623,17 +638,6 @@ with tab_forecasting:
                 # Agregar estacionalidad mensual
                 modelo.add_seasonality(name='monthly', period=30.5, fourier_order=5)
                 modelo.fit(prophet_df, algorithm='LBFGS')
-                
-                # Mapear granularidad a frecuencia y períodos para mantener ~90 días de proyección
-                if granularidad == 'Día':
-                    freq = 'D'
-                    periods = 90
-                elif granularidad == 'Semana':
-                    freq = 'W-MON'  # Semana que empieza en lunes
-                    periods = math.ceil(90 / 7)  # ~13 semanas
-                else:  # Mes
-                    freq = 'MS'  # Inicio de mes
-                    periods = math.ceil(90 / 30)  # ~3 meses
                 
                 futuro = modelo.make_future_dataframe(periods=periods, freq=freq)
                 forecast = modelo.predict(futuro)
