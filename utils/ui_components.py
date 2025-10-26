@@ -75,11 +75,11 @@ def crear_header_principal(titulo, subtitulo):
     """, unsafe_allow_html=True)
 
 def crear_pie_pagina():
-    """Crea el pie de página con firma cmsr92"""
+    """Crea el pie de página con firma CMSR92"""
     st.markdown("""
     <div class="pie-pagina">
         <p>Dashboard Avanzado de Analytics Ecommerce Global</p>
-        <p class="firma-autor">Desarrollado por cmsr92</p>
+        <p class="firma-autor">✨ Desarrollado por CMSR92 ✨</p>
         <p style="font-size: 0.85rem; margin-top: 1rem;">
             © 2025 - Plataforma de Business Intelligence con Machine Learning e Inteligencia Artificial
         </p>

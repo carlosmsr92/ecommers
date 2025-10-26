@@ -278,30 +278,27 @@ with tab_overview:
     
     datos_temporales = datos_filtrados.copy()
     datos_temporales['fecha'] = pd.to_datetime(datos_temporales['date'])
-    datos_temporales_agrupados = datos_temporales.groupby(datos_temporales['fecha'].dt.date).agg({
+    datos_temporales_agrupados = datos_temporales.groupby(datos_temporales['fecha'].dt.to_period('M')).agg({
         'total_amount_usd': 'sum',
         'transaction_id': 'count',
         'profit': 'sum'
     }).reset_index()
+    datos_temporales_agrupados['fecha'] = datos_temporales_agrupados['fecha'].dt.to_timestamp()
     datos_temporales_agrupados.columns = ['Fecha', 'Ingresos', 'Pedidos', 'Beneficio']
     
-    fig_evolucion = make_subplots(
-        rows=2, cols=1,
-        subplot_titles=('Ingresos y Beneficio Diarios', 'Volumen de Pedidos'),
-        row_heights=[0.6, 0.4],
-        vertical_spacing=0.12
-    )
+    # Crear figura con eje secundario
+    fig_evolucion = make_subplots(specs=[[{"secondary_y": True}]])
     
+    # Agregar líneas de ingresos y beneficio en eje principal
     fig_evolucion.add_trace(
         go.Scatter(
             x=datos_temporales_agrupados['Fecha'],
             y=datos_temporales_agrupados['Ingresos'],
             name='Ingresos',
             line=dict(color='#667eea', width=3),
-            fill='tozeroy',
-            fillcolor='rgba(102, 126, 234, 0.2)'
+            mode='lines'
         ),
-        row=1, col=1
+        secondary_y=False
     )
     
     fig_evolucion.add_trace(
@@ -309,30 +306,45 @@ with tab_overview:
             x=datos_temporales_agrupados['Fecha'],
             y=datos_temporales_agrupados['Beneficio'],
             name='Beneficio',
-            line=dict(color='#10B981', width=3),
-            fill='tozeroy',
-            fillcolor='rgba(16, 185, 129, 0.2)'
+            line=dict(color='#10B981', width=2),
+            mode='lines'
         ),
-        row=1, col=1
+        secondary_y=False
     )
     
+    # Agregar barras de pedidos en eje secundario
     fig_evolucion.add_trace(
         go.Bar(
             x=datos_temporales_agrupados['Fecha'],
             y=datos_temporales_agrupados['Pedidos'],
             name='Pedidos',
-            marker_color='#F59E0B'
+            marker_color='rgba(245, 158, 11, 0.3)',
+            marker_line_color='#F59E0B',
+            marker_line_width=1
         ),
-        row=2, col=1
+        secondary_y=True
     )
     
+    # Configurar ejes
+    fig_evolucion.update_yaxes(title_text="Ingresos / Beneficio ($)", secondary_y=False)
+    fig_evolucion.update_yaxes(title_text="Pedidos", secondary_y=True)
+    fig_evolucion.update_xaxes(title_text="Fecha")
+    
     fig_evolucion.update_layout(
-        height=600,
+        title='Evolución Mensual de Ingresos, Beneficio y Pedidos',
+        height=500,
         showlegend=True,
         hovermode='x unified',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(family='Inter', size=12)
+        font=dict(family='Inter', size=12),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        )
     )
     
     fig_evolucion.update_xaxes(showgrid=True, gridcolor='rgba(0,0,0,0.05)')
@@ -402,6 +414,21 @@ with tab_geografia:
     with col1:
         st.subheader("Mapa Mundial de Ventas")
         
+        # Mapeo de nombres de países a códigos ISO 3
+        country_iso_map = {
+            'United Kingdom': 'GBR', 'United States': 'USA', 'Germany': 'DEU', 
+            'France': 'FRA', 'China': 'CHN', 'Canada': 'CAN', 'Japan': 'JPN',
+            'Australia': 'AUS', 'Spain': 'ESP', 'Italy': 'ITA', 'Netherlands': 'NLD',
+            'Belgium': 'BEL', 'Switzerland': 'CHE', 'Sweden': 'SWE', 'Austria': 'AUT',
+            'Norway': 'NOR', 'Denmark': 'DNK', 'Finland': 'FIN', 'Poland': 'POL',
+            'Portugal': 'PRT', 'Greece': 'GRC', 'Czech Republic': 'CZE',
+            'Ireland': 'IRL', 'EIRE': 'IRL', 'Singapore': 'SGP', 'South Korea': 'KOR',
+            'India': 'IND', 'Brazil': 'BRA', 'Mexico': 'MEX', 'Israel': 'ISR',
+            'Saudi Arabia': 'SAU', 'United Arab Emirates': 'ARE', 'RSA': 'ZAF',
+            'Cyprus': 'CYP', 'Malta': 'MLT', 'Iceland': 'ISL', 'Lithuania': 'LTU',
+            'Bahrain': 'BHR', 'Lebanon': 'LBN', 'USA': 'USA'
+        }
+        
         datos_pais = datos_filtrados.groupby('country').agg({
             'total_amount_usd': 'sum',
             'transaction_id': 'count',
@@ -410,21 +437,33 @@ with tab_geografia:
         datos_pais.columns = ['country', 'ingresos', 'pedidos', 'clientes']
         datos_pais['aov'] = datos_pais['ingresos'] / datos_pais['pedidos']
         
+        # Agregar códigos ISO
+        datos_pais['iso_code'] = datos_pais['country'].map(country_iso_map)
+        # Filtrar países sin código ISO válido
+        datos_pais_validos = datos_pais[datos_pais['iso_code'].notna()].copy()
+        
         fig_mapa = px.choropleth(
-            datos_pais,
-            locations='country',
-            locationmode='country names',
+            datos_pais_validos,
+            locations='iso_code',
+            locationmode='ISO-3',
             color='ingresos',
             hover_name='country',
             hover_data={
+                'iso_code': False,
                 'ingresos': ':$,.0f',
                 'pedidos': ':,',
+                'clientes': ':,',
                 'aov': ':$,.2f'
             },
             color_continuous_scale='Viridis',
-            title='Ingresos por País'
+            title='Ingresos por País',
+            labels={'ingresos': 'Ingresos', 'pedidos': 'Pedidos', 'clientes': 'Clientes', 'aov': 'Ticket Promedio'}
         )
-        fig_mapa.update_layout(height=500, margin=dict(l=0, r=0, t=30, b=0))
+        fig_mapa.update_layout(
+            height=500, 
+            margin=dict(l=0, r=0, t=30, b=0),
+            geo=dict(showframe=False, showcoastlines=True, projection_type='natural earth')
+        )
         st.plotly_chart(fig_mapa, use_container_width=True)
     
     with col2:
@@ -454,17 +493,17 @@ with tab_geografia:
     with col3:
         st.subheader("Jerarquía Geográfica (Treemap)")
         
-        datos_tree_geo = datos_filtrados.groupby(['country', 'city', 'category']).agg({
+        datos_tree_geo = datos_filtrados.groupby(['country', 'category']).agg({
             'total_amount_usd': 'sum'
         }).reset_index()
         
         fig_tree = px.treemap(
             datos_tree_geo,
-            path=['country', 'city', 'category'],
+            path=['country', 'category'],
             values='total_amount_usd',
             color='total_amount_usd',
             color_continuous_scale='RdYlGn',
-            title='Jerarquía: País → Ciudad → Categoría'
+            title='Jerarquía: País → Categoría'
         )
         
         fig_tree.update_traces(
@@ -566,9 +605,14 @@ with tab_forecasting:
                     daily_seasonality=False,
                     weekly_seasonality=True,
                     yearly_seasonality=True,
+                    seasonality_mode='multiplicative',
+                    changepoint_prior_scale=0.05,
+                    seasonality_prior_scale=10,
                     interval_width=0.95
                 )
-                modelo.fit(prophet_df)
+                # Agregar estacionalidad mensual
+                modelo.add_seasonality(name='monthly', period=30.5, fourier_order=5)
+                modelo.fit(prophet_df, algorithm='LBFGS')
                 
                 futuro = modelo.make_future_dataframe(periods=90)
                 forecast = modelo.predict(futuro)
@@ -1232,22 +1276,37 @@ with tab_canal:
         device_idx = [labels_list.index(dev) for dev in sankey_top['device_type']]
         payment_idx = [labels_list.index(pay) for pay in sankey_top['payment_method']]
         
+        # Colores para los nodos
+        node_colors = []
+        for label in labels_list:
+            if label in sankey_top['traffic_source'].values:
+                node_colors.append('#667eea')
+            elif label in sankey_top['device_type'].values:
+                node_colors.append('#F59E0B')
+            else:
+                node_colors.append('#10B981')
+        
         fig_sankey = go.Figure(data=[go.Sankey(
             node=dict(
                 pad=15,
                 thickness=20,
-                line=dict(color='black', width=0.5),
+                line=dict(color='white', width=1),
                 label=labels_list,
-                color='lightblue'
+                color=node_colors
             ),
             link=dict(
                 source=source_idx + device_idx,
                 target=device_idx + payment_idx,
-                value=sankey_top['total_amount_usd'].tolist() + sankey_top['total_amount_usd'].tolist()
+                value=sankey_top['total_amount_usd'].tolist() + sankey_top['total_amount_usd'].tolist(),
+                color='rgba(200,200,200,0.3)'
             )
         )])
         
-        fig_sankey.update_layout(title='Flujo: Fuente → Dispositivo → Pago', height=500)
+        fig_sankey.update_layout(
+            title='Flujo de Conversión: Fuente → Dispositivo → Método de Pago', 
+            height=500,
+            font=dict(size=11)
+        )
         st.plotly_chart(fig_sankey, use_container_width=True)
     except Exception as e:
         st.warning(f"No se pudo generar diagrama Sankey: {str(e)}")
