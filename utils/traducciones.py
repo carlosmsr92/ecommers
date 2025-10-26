@@ -82,6 +82,7 @@ PAISES_TRADUCCION = {
     'Austria': 'Austria',
     'Greece': 'Grecia',
     'Ireland': 'Irlanda',
+    'EIRE': 'Irlanda',
     'Czech Republic': 'República Checa',
     'Hungary': 'Hungría',
     'Romania': 'Rumania',
@@ -239,10 +240,13 @@ CATEGORIAS_TRADUCCION = {
     'Electronics': 'Electrónica',
     'Clothing': 'Ropa',
     'Home & Garden': 'Hogar y Jardín',
+    'Home': 'Hogar',
     'Sports': 'Deportes',
     'Toys': 'Juguetes',
     'Beauty': 'Belleza',
     'Food': 'Alimentos',
+    'Groceries': 'Comestibles',
+    'Fashion': 'Moda',
     'Health': 'Salud',
     'Automotive': 'Automotriz',
     'Office': 'Oficina',
@@ -266,6 +270,8 @@ CATEGORIAS_TRADUCCION = {
     'toys': 'juguetes',
     'beauty': 'belleza',
     'food': 'alimentos',
+    'groceries': 'comestibles',
+    'fashion': 'moda',
     'health': 'salud',
     'automotive': 'automotriz',
     'office': 'oficina',
@@ -278,6 +284,44 @@ CATEGORIAS_TRADUCCION = {
     'jewelry': 'joyería',
     'shoes': 'calzado',
     'outdoor': 'exterior'
+}
+
+# Diccionario de traducción de fuentes de tráfico
+FUENTES_TRAFICO_TRADUCCION = {
+    'Direct': 'Directo',
+    'Organic': 'Orgánico',
+    'Paid Ads': 'Anuncios Pagados',
+    'Social Media': 'Redes Sociales',
+    'Email': 'Correo Electrónico',
+    'Referral': 'Referencia',
+    'Affiliate': 'Afiliado',
+    # Minúsculas
+    'direct': 'Directo',
+    'organic': 'Orgánico',
+    'paid ads': 'Anuncios Pagados',
+    'social media': 'Redes Sociales',
+    'email': 'Correo Electrónico',
+    'referral': 'Referencia',
+    'affiliate': 'Afiliado'
+}
+
+# Diccionario de traducción de segmentos de clientes
+SEGMENTOS_CLIENTES_TRADUCCION = {
+    'New': 'Nuevo',
+    'Regular': 'Regular',
+    'VIP': 'VIP',
+    'Premium': 'Premium',
+    'Bronze': 'Bronce',
+    'Silver': 'Plata',
+    'Gold': 'Oro',
+    # Minúsculas
+    'new': 'Nuevo',
+    'regular': 'Regular',
+    'vip': 'VIP',
+    'premium': 'Premium',
+    'bronze': 'Bronce',
+    'silver': 'Plata',
+    'gold': 'Oro'
 }
 
 # Diccionario inverso (español -> inglés) para filtros
@@ -429,6 +473,52 @@ def aplicar_traducciones_metodos_pago_df(df, columna='payment_method'):
     """Aplica traducciones de métodos de pago a una columna de DataFrame"""
     if columna in df.columns:
         df[columna] = df[columna].apply(traducir_metodo_pago)
+    return df
+
+def traducir_fuente_trafico(fuente):
+    """Traduce una fuente de tráfico del inglés al español"""
+    if not fuente or pd.isna(fuente):
+        return fuente
+    
+    fuente_str = str(fuente).strip()
+    
+    # Buscar traducción exacta o case-insensitive
+    if fuente_str in FUENTES_TRAFICO_TRADUCCION:
+        return FUENTES_TRAFICO_TRADUCCION[fuente_str]
+    
+    for key, value in FUENTES_TRAFICO_TRADUCCION.items():
+        if key.lower() == fuente_str.lower():
+            return value
+    
+    return fuente_str
+
+def traducir_segmento_cliente(segmento):
+    """Traduce un segmento de cliente del inglés al español"""
+    if not segmento or pd.isna(segmento):
+        return segmento
+    
+    segmento_str = str(segmento).strip()
+    
+    # Buscar traducción exacta o case-insensitive
+    if segmento_str in SEGMENTOS_CLIENTES_TRADUCCION:
+        return SEGMENTOS_CLIENTES_TRADUCCION[segmento_str]
+    
+    for key, value in SEGMENTOS_CLIENTES_TRADUCCION.items():
+        if key.lower() == segmento_str.lower():
+            return value
+    
+    return segmento_str
+
+def aplicar_traducciones_fuentes_trafico_df(df, columna='traffic_source'):
+    """Aplica traducciones de fuentes de tráfico a una columna de DataFrame"""
+    if columna in df.columns:
+        df[columna] = df[columna].apply(traducir_fuente_trafico)
+    return df
+
+def aplicar_traducciones_segmentos_clientes_df(df, columna='customer_segment'):
+    """Aplica traducciones de segmentos de clientes a una columna de DataFrame"""
+    if columna in df.columns:
+        df[columna] = df[columna].apply(traducir_segmento_cliente)
     return df
 
 # Diccionario de labels profesionales para gráficos

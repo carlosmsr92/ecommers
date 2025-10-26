@@ -8,7 +8,9 @@ from utils.traducciones import (
     aplicar_traducciones_paises_df,
     aplicar_traducciones_rfm_df,
     aplicar_traducciones_dispositivos_df,
-    aplicar_traducciones_metodos_pago_df
+    aplicar_traducciones_metodos_pago_df,
+    aplicar_traducciones_fuentes_trafico_df,
+    aplicar_traducciones_segmentos_clientes_df
 )
 
 @st.cache_data(ttl=300)
@@ -57,6 +59,16 @@ def load_data_from_postgres():
             if 'payment_method' in transactions_df.columns:
                 transactions_df = aplicar_traducciones_metodos_pago_df(transactions_df, 'payment_method')
             
+            # Traducir fuentes de tráfico al español
+            if 'traffic_source' in transactions_df.columns:
+                transactions_df = aplicar_traducciones_fuentes_trafico_df(transactions_df, 'traffic_source')
+            
+            # Traducir segmentos de clientes al español
+            if 'customer_segment' in transactions_df.columns:
+                transactions_df = aplicar_traducciones_segmentos_clientes_df(transactions_df, 'customer_segment')
+            if 'customer_segment' in customers_df.columns:
+                customers_df = aplicar_traducciones_segmentos_clientes_df(customers_df, 'customer_segment')
+            
             return transactions_df, customers_df, products_df
             
         except Exception as e:
@@ -104,6 +116,16 @@ def load_data_from_postgres():
         # Traducir métodos de pago al español
         if 'payment_method' in transactions_df.columns:
             transactions_df = aplicar_traducciones_metodos_pago_df(transactions_df, 'payment_method')
+        
+        # Traducir fuentes de tráfico al español
+        if 'traffic_source' in transactions_df.columns:
+            transactions_df = aplicar_traducciones_fuentes_trafico_df(transactions_df, 'traffic_source')
+        
+        # Traducir segmentos de clientes al español
+        if 'customer_segment' in transactions_df.columns:
+            transactions_df = aplicar_traducciones_segmentos_clientes_df(transactions_df, 'customer_segment')
+        if 'customer_segment' in customers_df.columns:
+            customers_df = aplicar_traducciones_segmentos_clientes_df(customers_df, 'customer_segment')
         
         return transactions_df, customers_df, products_df
         
