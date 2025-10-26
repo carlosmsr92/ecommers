@@ -1657,8 +1657,8 @@ with tab_finanzas:
             if pendiente > 0:
                 crecimiento_mensual = f"${pendiente:,.0f}"
                 proyeccion_3m = f"${proyeccion_df['proyeccion'].iloc[-1]:,.0f}"
-                st.success(f"📈 **Tendencia positiva:** El beneficio crece aproximadamente {crecimiento_mensual}/mes. "
-                          f"Si se mantiene esta tendencia, proyectamos {proyeccion_3m} en 3 meses.")
+                mensaje = f"📈 **Tendencia positiva:** El beneficio crece aproximadamente {crecimiento_mensual}/mes. Si se mantiene esta tendencia, proyectamos {proyeccion_3m} en 3 meses."
+                st.success(mensaje)
             elif pendiente < 0:
                 st.warning(f"📉 **Tendencia negativa:** El beneficio decrece aproximadamente ${abs(pendiente):,.0f}/mes. Requiere atención.")
             else:
