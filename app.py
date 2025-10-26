@@ -79,6 +79,26 @@ with tab_overview:
     
     crear_seccion_titulo("Indicadores Clave de Rendimiento (KPIs)")
     
+    # Explicación de KPIs
+    with st.expander("ℹ️ ¿Qué significan estos indicadores?", expanded=False):
+        st.markdown("""
+        **💰 Ingresos Totales:** Suma de todas las ventas en el período seleccionado. El símbolo % muestra el cambio respecto al período anterior equivalente.
+        
+        **🛒 Pedidos Totales:** Número total de transacciones completadas. Un aumento indica mayor actividad comercial.
+        
+        **🎯 Ticket Promedio (AOV):** Valor promedio por pedido. Se calcula dividiendo ingresos totales entre número de pedidos. Un AOV alto indica clientes que compran más por transacción.
+        
+        **💎 Beneficio Total:** Ganancia neta después de costos. Se calcula como: Ingresos - Costos. Indica la rentabilidad real del negocio.
+        
+        **👥 Clientes Únicos:** Número de clientes diferentes que realizaron al menos una compra.
+        
+        **📦 Productos Vendidos:** Cantidad de productos distintos que se vendieron en el período.
+        
+        **🎯 Tasa de Conversión:** Porcentaje de clientes únicos respecto al total de pedidos. Una tasa cercana a 100% indica que cada pedido corresponde a un cliente diferente (baja repetición).
+        
+        **📊 Items por Pedido:** Promedio de artículos incluidos en cada transacción. Útil para estrategias de bundling y cross-selling.
+        """)
+    
     ingresos_totales = datos_filtrados['total_amount_usd'].sum()
     pedidos_totales = len(datos_filtrados)
     ticket_promedio = datos_filtrados['total_amount_usd'].mean()
@@ -156,6 +176,99 @@ with tab_overview:
             label="📊 Items por Pedido",
             value=f"{items_promedio:.1f}"
         )
+    
+    # Sección de Insights Ejecutivos Automáticos
+    st.markdown("<br>", unsafe_allow_html=True)
+    crear_seccion_titulo("💡 Insights Ejecutivos y Recomendaciones")
+    
+    # Calcular métricas adicionales para insights (con protección contra división por cero)
+    if ingresos_totales > 0:
+        top_pais = datos_filtrados.groupby('country')['total_amount_usd'].sum().idxmax()
+        ingresos_top_pais = datos_filtrados.groupby('country')['total_amount_usd'].sum().max()
+        porcentaje_top_pais = (ingresos_top_pais / ingresos_totales * 100)
+        
+        top_categoria = datos_filtrados.groupby('category')['total_amount_usd'].sum().idxmax()
+        ingresos_top_categoria = datos_filtrados.groupby('category')['total_amount_usd'].sum().max()
+        porcentaje_top_categoria = (ingresos_top_categoria / ingresos_totales * 100)
+    else:
+        top_pais = "N/A"
+        ingresos_top_pais = 0
+        porcentaje_top_pais = 0
+        top_categoria = "N/A"
+        ingresos_top_categoria = 0
+        porcentaje_top_categoria = 0
+    
+    # Generar insights automáticos
+    insights_ejecutivos = []
+    
+    # Verificar si hay datos suficientes para generar insights
+    if ingresos_totales == 0 or pedidos_totales == 0:
+        insights_ejecutivos.append(
+            f"ℹ️ **Sin Datos Disponibles:** No hay transacciones registradas en el período y filtros seleccionados. "
+            f"Ajusta los criterios de búsqueda en el sidebar para analizar diferentes períodos o segmentos."
+        )
+    else:
+        # Insight 1: Rendimiento general
+        if cambio_ingresos > 10:
+            insights_ejecutivos.append(
+                f"📈 **Crecimiento Acelerado:** Los ingresos han crecido un {cambio_ingresos:.1f}% comparado con el período anterior, "
+                f"superando ${ingresos_totales:,.0f}. Este momentum positivo indica una fuerte demanda y efectividad en las estrategias comerciales."
+            )
+        elif cambio_ingresos < -10:
+            insights_ejecutivos.append(
+                f"⚠️ **Alerta de Desaceleración:** Los ingresos han disminuido un {abs(cambio_ingresos):.1f}% comparado con el período anterior. "
+                f"Se recomienda revisar estrategias de marketing, competencia y satisfacción del cliente."
+            )
+        else:
+            insights_ejecutivos.append(
+                f"📊 **Estabilidad Controlada:** Los ingresos se mantienen estables con una variación de {cambio_ingresos:+.1f}% respecto al período anterior, "
+                f"totalizando ${ingresos_totales:,.0f}. Existen oportunidades de optimización para impulsar el crecimiento."
+            )
+        
+        # Insight 2: Concentración geográfica
+        if porcentaje_top_pais > 50:
+            insights_ejecutivos.append(
+                f"🌍 **Concentración de Mercado:** {top_pais} representa el {porcentaje_top_pais:.1f}% de los ingresos totales "
+                f"(${ingresos_top_pais:,.0f}). Esta alta dependencia presenta riesgo. Se recomienda diversificar geográficamente."
+            )
+        else:
+            insights_ejecutivos.append(
+                f"🌍 **Diversificación Saludable:** {top_pais} lidera con {porcentaje_top_pais:.1f}% de ingresos, pero existe buena "
+                f"distribución geográfica, reduciendo el riesgo de dependencia de un solo mercado."
+            )
+        
+        # Insight 3: Producto estrella
+        insights_ejecutivos.append(
+            f"⭐ **Categoría Líder:** {top_categoria} domina el portafolio con {porcentaje_top_categoria:.1f}% de los ingresos "
+            f"(${ingresos_top_categoria:,.0f}). Reforzar inventario y marketing en esta categoría puede maximizar resultados."
+        )
+        
+        # Insight 4: Eficiencia operativa
+        if ticket_promedio > 100:
+            insights_ejecutivos.append(
+                f"💎 **Alto Valor por Transacción:** El ticket promedio de ${ticket_promedio:,.0f} indica clientes de alto valor. "
+                f"Enfocar estrategias de retención y programas VIP puede aumentar la rentabilidad."
+            )
+        else:
+            insights_ejecutivos.append(
+                f"🎯 **Oportunidad de Upselling:** Con un ticket promedio de ${ticket_promedio:,.0f}, existe potencial para incrementar "
+                f"el valor por pedido mediante bundling, recomendaciones personalizadas y ofertas complementarias."
+            )
+    
+    # Mostrar insights
+    for insight in insights_ejecutivos:
+        crear_insight("", insight)
+    
+    # Recomendaciones accionables
+    recomendaciones_ejecutivas = [
+        f"🔍 **Análisis Geográfico:** Explorar la pestaña 'Análisis Geográfico' para identificar mercados emergentes con alto potencial de crecimiento",
+        f"📊 **Forecasting:** Revisar las predicciones en 'Forecasting & Tendencias' para planificar inventario y presupuestos de los próximos 90 días",
+        f"👥 **Segmentación:** Analizar 'Segmentación de Clientes' para identificar clientes Champions y en riesgo de churn, personalizando estrategias",
+        f"🤖 **ML Insights:** Activar análisis ML en el sidebar para detectar anomalías, patrones ocultos y oportunidades de optimización automática",
+        f"💰 **Análisis Financiero:** Verificar márgenes y rentabilidad en 'Análisis Financiero' para asegurar la salud del negocio"
+    ]
+    
+    crear_recomendaciones("🎯 Acciones Recomendadas", recomendaciones_ejecutivas)
     
     crear_seccion_titulo("Evolución Temporal")
     
