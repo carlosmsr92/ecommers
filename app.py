@@ -39,7 +39,7 @@ LABELS = obtener_labels_profesionales()
 # Aplicar estilos globales con detección automática de tema del navegador
 aplicar_estilos_globales()
 
-@st.cache_resource
+@st.cache_data(ttl=60)
 def cargar_datos():
     return load_or_generate_data()
 
@@ -414,19 +414,19 @@ with tab_geografia:
     with col1:
         st.subheader("Mapa Mundial de Ventas")
         
-        # Mapeo de nombres de países a códigos ISO 3
+        # Mapeo de nombres de países (en español) a códigos ISO 3
         country_iso_map = {
-            'United Kingdom': 'GBR', 'United States': 'USA', 'Germany': 'DEU', 
-            'France': 'FRA', 'China': 'CHN', 'Canada': 'CAN', 'Japan': 'JPN',
-            'Australia': 'AUS', 'Spain': 'ESP', 'Italy': 'ITA', 'Netherlands': 'NLD',
-            'Belgium': 'BEL', 'Switzerland': 'CHE', 'Sweden': 'SWE', 'Austria': 'AUT',
-            'Norway': 'NOR', 'Denmark': 'DNK', 'Finland': 'FIN', 'Poland': 'POL',
-            'Portugal': 'PRT', 'Greece': 'GRC', 'Czech Republic': 'CZE',
-            'Ireland': 'IRL', 'EIRE': 'IRL', 'Singapore': 'SGP', 'South Korea': 'KOR',
-            'India': 'IND', 'Brazil': 'BRA', 'Mexico': 'MEX', 'Israel': 'ISR',
-            'Saudi Arabia': 'SAU', 'United Arab Emirates': 'ARE', 'RSA': 'ZAF',
-            'Cyprus': 'CYP', 'Malta': 'MLT', 'Iceland': 'ISL', 'Lithuania': 'LTU',
-            'Bahrain': 'BHR', 'Lebanon': 'LBN', 'USA': 'USA'
+            'Reino Unido': 'GBR', 'Estados Unidos': 'USA', 'Alemania': 'DEU', 
+            'Francia': 'FRA', 'China': 'CHN', 'Canadá': 'CAN', 'Japón': 'JPN',
+            'Australia': 'AUS', 'España': 'ESP', 'Italia': 'ITA', 'Países Bajos': 'NLD',
+            'Bélgica': 'BEL', 'Suiza': 'CHE', 'Suecia': 'SWE', 'Austria': 'AUT',
+            'Noruega': 'NOR', 'Dinamarca': 'DNK', 'Finlandia': 'FIN', 'Polonia': 'POL',
+            'Portugal': 'PRT', 'Grecia': 'GRC', 'República Checa': 'CZE',
+            'Irlanda': 'IRL', 'Singapur': 'SGP', 'Corea del Sur': 'KOR',
+            'India': 'IND', 'Brasil': 'BRA', 'México': 'MEX', 'Israel': 'ISR',
+            'Arabia Saudita': 'SAU', 'Emiratos Árabes Unidos': 'ARE', 'Sudáfrica': 'ZAF',
+            'Chipre': 'CYP', 'Malta': 'MLT', 'Islandia': 'ISL', 'Lituania': 'LTU',
+            'Baréin': 'BHR', 'Líbano': 'LBN', 'Comunidad Europea': None
         }
         
         datos_pais = datos_filtrados.groupby('country').agg({

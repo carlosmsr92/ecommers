@@ -13,9 +13,9 @@ from utils.traducciones import (
     aplicar_traducciones_segmentos_clientes_df
 )
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=60)
 def load_data_from_postgres():
-    """Carga datos desde archivos unificados (Parquet) o PostgreSQL"""
+    """Carga datos desde archivos unificados (Parquet) o PostgreSQL - con consolidación de variantes de países"""
     import os
     
     # Verificar si existen archivos unificados
@@ -46,6 +46,20 @@ def load_data_from_postgres():
             # Traducir países al español
             transactions_df = aplicar_traducciones_paises_df(transactions_df, 'country')
             customers_df = aplicar_traducciones_paises_df(customers_df, 'country')
+            
+            # Consolidar variantes de nombres de países
+            transactions_df['country'] = transactions_df['country'].replace({
+                'USA': 'Estados Unidos',
+                'EIRE': 'Irlanda',
+                'RSA': 'Sudáfrica',
+                'Channel Islands': 'Reino Unido'
+            })
+            customers_df['country'] = customers_df['country'].replace({
+                'USA': 'Estados Unidos',
+                'EIRE': 'Irlanda',
+                'RSA': 'Sudáfrica',
+                'Channel Islands': 'Reino Unido'
+            })
             
             # Traducir segmentos RFM al español
             if 'rfm_segment' in customers_df.columns:
@@ -104,6 +118,20 @@ def load_data_from_postgres():
         # Traducir países al español
         transactions_df = aplicar_traducciones_paises_df(transactions_df, 'country')
         customers_df = aplicar_traducciones_paises_df(customers_df, 'country')
+        
+        # Consolidar variantes de nombres de países
+        transactions_df['country'] = transactions_df['country'].replace({
+            'USA': 'Estados Unidos',
+            'EIRE': 'Irlanda',
+            'RSA': 'Sudáfrica',
+            'Channel Islands': 'Reino Unido'
+        })
+        customers_df['country'] = customers_df['country'].replace({
+            'USA': 'Estados Unidos',
+            'EIRE': 'Irlanda',
+            'RSA': 'Sudáfrica',
+            'Channel Islands': 'Reino Unido'
+        })
         
         # Traducir segmentos RFM al español
         if 'rfm_segment' in customers_df.columns:
