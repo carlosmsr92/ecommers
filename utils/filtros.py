@@ -189,11 +189,9 @@ def crear_filtros_sidebar(transacciones_df):
         bool(filtros.get('fuentes_trafico')),
     ])
     
-    st.sidebar.info(f"🔍 **Filtros Activos:** {num_filtros_activos}")
-    
     if num_filtros_activos > 0:
-        if st.sidebar.button("🔄 Limpiar Todos los Filtros", use_container_width=True):
-            st.rerun()
+        st.sidebar.info(f"🔍 **Filtros Activos:** {num_filtros_activos}")
+        st.sidebar.caption("💡 Puedes limpiar cada filtro individualmente usando el ícono ✕ en cada campo")
     
     return filtros
 
