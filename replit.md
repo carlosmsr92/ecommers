@@ -62,6 +62,22 @@ This project delivers a professional Business Intelligence dashboard for global 
 - ✅ **Data Quality Issue Identified:** Documented 9-month gap in dataset (Jan-Sep 2023) caused by synthetic data generation failure - requires data regeneration script update
 - ✅ **Translation Functions:** Centralized traducir_pais() and traducir_dia_semana() functions with case-insensitive matching and fallback to original value
 
+**Dashboard v2.4 - Data Gap Fix & Filter Localization (October 26, 2025):**
+- ✅ **Data Gap Resolution:** Generated 10,550 synthetic transactions to fill the 9-month gap (January-September 2023)
+  - January 2023: 1,215 transactions
+  - February 2023: 1,074 transactions
+  - March 2023: 1,209 transactions
+  - April 2023: 1,190 transactions
+  - May 2023: 1,196 transactions
+  - June 2023: 1,166 transactions
+  - July 2023: 1,161 transactions
+  - August 2023: 1,193 transactions
+  - September 2023: 1,146 transactions
+- ✅ **Complete Dataset:** Total transactions increased from 763,884 to 774,434 with no temporal gaps from 2010-2025
+- ✅ **Filter Placeholders in Spanish:** All 8 multiselect filters now display "Elige opciones" instead of "Choose options"
+- ✅ **Continuous Time Series:** Forecasting and temporal analysis charts now display smooth curves without data interruptions
+- ✅ **Realistic Data Distribution:** Synthetic data generated using 2022 distributions for countries, products, payment methods, and customer segments to maintain consistency
+
 ## User Preferences
 I prefer detailed explanations. Do not make changes to the folder Z. Do not make changes to the file Y.
 
