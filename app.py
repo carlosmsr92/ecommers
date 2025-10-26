@@ -31,7 +31,12 @@ from utils.ui_components import (
 from utils.filtros import crear_filtros_sidebar, aplicar_filtros
 from utils.data_loader_pg import load_or_generate_data
 
-aplicar_estilos_globales()
+# Toggle de modo claro/oscuro en el sidebar superior
+with st.sidebar:
+    modo_oscuro = st.checkbox("🌙 Modo Oscuro", value=False, help="Cambia entre modo claro y oscuro para mejor legibilidad")
+    st.markdown("---")
+
+aplicar_estilos_globales(modo_oscuro=modo_oscuro)
 
 @st.cache_resource
 def cargar_datos():
@@ -91,22 +96,62 @@ with tab_overview:
     
     col1, col2, col3, col4 = st.columns(4)
     
-    crear_tarjeta_kpi("💰", "Ingresos Totales", ingresos_totales, cambio_ingresos, "moneda", col1)
-    crear_tarjeta_kpi("🛒", "Pedidos Totales", pedidos_totales, cambio_pedidos, "numero", col2)
-    crear_tarjeta_kpi("🎯", "Ticket Promedio (AOV)", ticket_promedio, None, "moneda", col3)
-    crear_tarjeta_kpi("💎", "Beneficio Total", beneficio_total, None, "moneda", col4)
+    with col1:
+        st.metric(
+            label="💰 Ingresos Totales",
+            value=f"${ingresos_totales:,.0f}",
+            delta=f"{cambio_ingresos:+.1f}%" if ingresos_anteriores > 0 else None
+        )
+    
+    with col2:
+        st.metric(
+            label="🛒 Pedidos Totales",
+            value=f"{pedidos_totales:,}",
+            delta=f"{cambio_pedidos:+.1f}%" if pedidos_anteriores > 0 else None
+        )
+    
+    with col3:
+        st.metric(
+            label="🎯 Ticket Promedio (AOV)",
+            value=f"${ticket_promedio:,.0f}"
+        )
+    
+    with col4:
+        st.metric(
+            label="💎 Beneficio Total",
+            value=f"${beneficio_total:,.0f}"
+        )
     
     st.markdown("<br>", unsafe_allow_html=True)
     
     col5, col6, col7, col8 = st.columns(4)
     
-    crear_tarjeta_kpi("👥", "Clientes Únicos", clientes_unicos, None, "numero", col5)
-    productos_unicos = datos_filtrados['product_id'].nunique()
-    crear_tarjeta_kpi("📦", "Productos Vendidos", productos_unicos, None, "numero", col6)
-    tasa_conversion = (clientes_unicos / pedidos_totales * 100) if pedidos_totales > 0 else 0
-    crear_tarjeta_kpi("🎯", "Tasa de Conversión", tasa_conversion, None, "porcentaje", col7)
-    items_promedio = datos_filtrados['quantity'].mean()
-    crear_tarjeta_kpi("📊", "Items por Pedido", items_promedio, None, "numero", col8)
+    with col5:
+        st.metric(
+            label="👥 Clientes Únicos",
+            value=f"{clientes_unicos:,}"
+        )
+    
+    with col6:
+        productos_unicos = datos_filtrados['product_id'].nunique()
+        st.metric(
+            label="📦 Productos Vendidos",
+            value=f"{productos_unicos:,}"
+        )
+    
+    with col7:
+        tasa_conversion = (clientes_unicos / pedidos_totales * 100) if pedidos_totales > 0 else 0
+        st.metric(
+            label="🎯 Tasa de Conversión",
+            value=f"{tasa_conversion:.1f}%"
+        )
+    
+    with col8:
+        items_promedio = datos_filtrados['quantity'].mean()
+        st.metric(
+            label="📊 Items por Pedido",
+            value=f"{items_promedio:.1f}"
+        )
     
     crear_seccion_titulo("Evolución Temporal")
     
@@ -273,14 +318,28 @@ with tab_geografia:
     
     with col3:
         st.subheader("Jerarquía Geográfica (Treemap)")
+        
+        datos_tree_geo = datos_filtrados.groupby(['country', 'city', 'category']).agg({
+            'total_amount_usd': 'sum'
+        }).reset_index()
+        datos_tree_geo['ingresos_formateados'] = datos_tree_geo['total_amount_usd'].apply(lambda x: f"${x:,.0f}")
+        
         fig_tree = px.treemap(
-            datos_filtrados,
+            datos_tree_geo,
             path=['country', 'city', 'category'],
             values='total_amount_usd',
             color='total_amount_usd',
             color_continuous_scale='RdYlGn',
-            title='Jerarquía: País → Ciudad → Categoría'
+            title='Jerarquía: País → Ciudad → Categoría',
+            custom_data=['ingresos_formateados']
         )
+        
+        fig_tree.update_traces(
+            hovertemplate='<b>%{label}</b><br>Ingresos: %{value:$,.0f}<extra></extra>',
+            textinfo='label+value',
+            texttemplate='<b>%{label}</b><br>$%{value:,.0f}'
+        )
+        
         fig_tree.update_layout(height=400)
         st.plotly_chart(fig_tree, use_container_width=True)
     
@@ -310,7 +369,12 @@ with tab_forecasting:
     
     st.subheader("Ingresos y Pedidos a lo Largo del Tiempo")
     
-    granularidad = st.selectbox("Granularidad Temporal", ['Día', 'Semana', 'Mes'], index=1)
+    granularidad = st.selectbox(
+        "Granularidad Temporal",
+        ['Día', 'Semana', 'Mes'],
+        index=1,
+        help="Selecciona el nivel de agregación temporal para el análisis"
+    )
     
     temp_df = datos_filtrados.copy()
     if granularidad == 'Día':
@@ -508,6 +572,7 @@ with tab_productos:
         datos_categoria = datos_filtrados.groupby(['category', 'subcategory']).agg({
             'total_amount_usd': 'sum'
         }).reset_index()
+        datos_categoria['ingresos_formateados'] = datos_categoria['total_amount_usd'].apply(lambda x: f"${x:,.0f}")
         
         fig_tree_cat = px.treemap(
             datos_categoria,
@@ -515,8 +580,16 @@ with tab_productos:
             values='total_amount_usd',
             title='Jerarquía de Categorías',
             color='total_amount_usd',
-            color_continuous_scale='Viridis'
+            color_continuous_scale='Viridis',
+            custom_data=['ingresos_formateados']
         )
+        
+        fig_tree_cat.update_traces(
+            hovertemplate='<b>%{label}</b><br>Ingresos: %{value:$,.0f}<extra></extra>',
+            textinfo='label+value',
+            texttemplate='<b>%{label}</b><br>$%{value:,.0f}'
+        )
+        
         fig_tree_cat.update_layout(height=400)
         st.plotly_chart(fig_tree_cat, use_container_width=True)
     
@@ -542,11 +615,12 @@ with tab_productos:
     
     st.subheader("Análisis de Performance de Productos (Matriz BCG)")
     
-    productos_bcg = datos_filtrados.groupby('product_id').agg({
+    productos_bcg = datos_filtrados.groupby(['product_id', 'product_name']).agg({
         'total_amount_usd': 'sum',
         'transaction_id': 'count'
     }).reset_index()
-    productos_bcg.columns = ['product_id', 'ingresos', 'frecuencia']
+    productos_bcg.columns = ['product_id', 'producto', 'ingresos', 'frecuencia']
+    productos_bcg['ingresos_formato'] = productos_bcg['ingresos'].apply(lambda x: f"${x:,.0f}")
     
     mediana_ingresos = productos_bcg['ingresos'].median()
     mediana_frecuencia = productos_bcg['frecuencia'].median()
@@ -563,15 +637,17 @@ with tab_productos:
     
     productos_bcg['cuadrante'] = productos_bcg.apply(clasificar_bcg, axis=1)
     
+    productos_bcg_muestra = productos_bcg.sample(min(500, len(productos_bcg)))
+    
     fig_bcg = px.scatter(
-        productos_bcg.sample(min(500, len(productos_bcg))),
+        productos_bcg_muestra,
         x='frecuencia',
         y='ingresos',
         color='cuadrante',
         size='ingresos',
-        hover_data=['product_id'],
+        hover_data={'producto': True, 'ingresos_formato': True, 'frecuencia': True, 'ingresos': False, 'cuadrante': False},
         title='Matriz BCG de Productos',
-        labels={'frecuencia': 'Frecuencia de Compra', 'ingresos': 'Ingresos (USD)', 'cuadrante': 'Cuadrante BCG'},
+        labels={'frecuencia': 'Frecuencia de Compra', 'ingresos': 'Ingresos (USD)', 'cuadrante': 'Cuadrante', 'producto': 'Producto'},
         color_discrete_map={
             'Estrellas': '#10B981',
             'Vacas Lecheras': '#3B82F6',
@@ -579,8 +655,13 @@ with tab_productos:
             'Perros': '#EF4444'
         }
     )
-    fig_bcg.add_hline(y=mediana_ingresos, line_dash="dash", line_color="gray")
-    fig_bcg.add_vline(x=mediana_frecuencia, line_dash="dash", line_color="gray")
+    
+    fig_bcg.update_traces(
+        hovertemplate='<b>%{customdata[0]}</b><br>Cuadrante: %{marker.color}<br>Ingresos: %{customdata[1]}<br>Frecuencia: %{customdata[2]}<extra></extra>'
+    )
+    
+    fig_bcg.add_hline(y=mediana_ingresos, line_dash="dash", line_color="gray", annotation_text="Mediana Ingresos")
+    fig_bcg.add_vline(x=mediana_frecuencia, line_dash="dash", line_color="gray", annotation_text="Mediana Frecuencia")
     fig_bcg.update_layout(height=500)
     st.plotly_chart(fig_bcg, use_container_width=True)
     
@@ -648,19 +729,29 @@ with tab_clientes:
     fig_ltv_dist.update_layout(height=400, showlegend=False)
     st.plotly_chart(fig_ltv_dist, use_container_width=True)
     
-    if filtros.get('mostrar_ml'):
+    if filtros.get('mostrar_ml') and len(datos_filtrados) > 100:
         st.subheader("🤖 Clustering de Clientes (K-Means)")
         
         try:
             from sklearn.cluster import KMeans
             from sklearn.preprocessing import StandardScaler
             
-            required_cols = ['recency', 'frequency', 'monetary', 'lifetime_value']
-            if all(col in clientes_filt.columns for col in required_cols):
-                features_clustering = clientes_filt[required_cols].dropna()
-            else:
-                st.info("Clustering requiere datos de RFM completos. Ajusta los filtros para incluir más clientes.")
-                features_clustering = pd.DataFrame()
+            fecha_analisis = datos_filtrados['date'].max()
+            
+            rfm_data = datos_filtrados.groupby('customer_id').agg({
+                'date': lambda x: (fecha_analisis - x.max()).days,
+                'transaction_id': 'count',
+                'total_amount_usd': 'sum'
+            }).reset_index()
+            rfm_data.columns = ['customer_id', 'recency', 'frequency', 'monetary']
+            
+            rfm_data = rfm_data.merge(
+                clientes_df[['customer_id', 'lifetime_value']], 
+                on='customer_id', 
+                how='left'
+            )
+            
+            features_clustering = rfm_data[['recency', 'frequency', 'monetary', 'lifetime_value']].fillna(0)
             
             if len(features_clustering) > 10:
                 scaler = StandardScaler()
@@ -669,29 +760,61 @@ with tab_clientes:
                 kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
                 clusters = kmeans.fit_predict(features_scaled)
                 
-                clientes_filt_copy = clientes_filt.loc[features_clustering.index].copy()
-                clientes_filt_copy['cluster'] = clusters
+                rfm_data['cluster'] = clusters
+                rfm_data['cluster_nombre'] = rfm_data['cluster'].map({
+                    0: 'Cluster Premium',
+                    1: 'Cluster Activo',
+                    2: 'Cluster En Riesgo',
+                    3: 'Cluster Inactivo'
+                })
+                
+                muestra_viz = rfm_data.sample(min(1000, len(rfm_data)))
                 
                 fig_clusters = px.scatter_3d(
-                    clientes_filt_copy.sample(min(1000, len(clientes_filt_copy))),
+                    muestra_viz,
                     x='recency',
                     y='frequency',
                     z='monetary',
-                    color='cluster',
-                    title='Segmentación 3D de Clientes (Recencia, Frecuencia, Monetario)',
-                    labels={'recency': 'Recencia (días)', 'frequency': 'Frecuencia', 'monetary': 'Valor Monetario'},
-                    color_continuous_scale='Viridis',
+                    color='cluster_nombre',
+                    title='Segmentación 3D de Clientes (Recencia, Frecuencia, Valor Monetario)',
+                    labels={
+                        'recency': 'Recencia (días)',
+                        'frequency': 'Frecuencia de Compra',
+                        'monetary': 'Valor Monetario (USD)',
+                        'cluster_nombre': 'Segmento'
+                    },
+                    color_discrete_map={
+                        'Cluster Premium': '#10B981',
+                        'Cluster Activo': '#3B82F6',
+                        'Cluster En Riesgo': '#F59E0B',
+                        'Cluster Inactivo': '#EF4444'
+                    },
                     height=600
                 )
+                
+                fig_clusters.update_traces(
+                    marker=dict(size=5, opacity=0.7),
+                    hovertemplate='<b>%{customdata[0]}</b><br>Recencia: %{x} días<br>Frecuencia: %{y} compras<br>Valor: $%{z:,.0f}<extra></extra>'
+                )
+                
                 st.plotly_chart(fig_clusters, use_container_width=True)
                 
                 col_cluster = st.columns(4)
-                for i in range(4):
+                for i, nombre in enumerate(['Premium', 'Activo', 'En Riesgo', 'Inactivo']):
                     with col_cluster[i]:
-                        count_cluster = len(clientes_filt_copy[clientes_filt_copy['cluster'] == i])
-                        st.metric(f"Cluster {i+1}", f"{count_cluster} clientes")
+                        count_cluster = len(rfm_data[rfm_data['cluster'] == i])
+                        pct_cluster = (count_cluster / len(rfm_data) * 100)
+                        st.metric(
+                            f"Cluster {nombre}",
+                            f"{count_cluster} clientes",
+                            delta=f"{pct_cluster:.1f}% del total"
+                        )
+            else:
+                st.info("Se requieren al menos 10 clientes para generar el clustering. Ajusta los filtros.")
+                
         except Exception as e:
-            st.warning(f"No se pudo generar clustering: {str(e)}")
+            st.error(f"Error al generar clustering: {str(e)}")
+            st.info("Intenta ajustar los filtros o verificar que hay datos suficientes para el análisis.")
     
     st.subheader("Riesgo de Churn")
     

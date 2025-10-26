@@ -111,8 +111,26 @@ def crear_metrica_comparativa(titulo, valor_actual, valor_anterior, formato='num
         delta_color="normal"
     )
 
-def aplicar_estilos_globales():
-    """Aplica los estilos CSS globales del dashboard"""
+def aplicar_estilos_globales(modo_oscuro=False):
+    """Aplica los estilos CSS globales del dashboard con soporte para modo claro/oscuro"""
+    
+    if modo_oscuro:
+        bg_principal = '#0F172A'
+        bg_secundario = '#1E293B'
+        bg_tarjeta = '#1E293B'
+        color_texto = '#F1F5F9'
+        color_texto_secundario = '#CBD5E1'
+        color_borde = '#334155'
+        sombra = '0 4px 6px rgba(0, 0, 0, 0.3)'
+    else:
+        bg_principal = '#F8FAFC'
+        bg_secundario = '#FFFFFF'
+        bg_tarjeta = '#FFFFFF'
+        color_texto = '#0F172A'
+        color_texto_secundario = '#475569'
+        color_borde = '#E2E8F0'
+        sombra = '0 4px 6px rgba(0, 0, 0, 0.1)'
+    
     st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -122,7 +140,7 @@ def aplicar_estilos_globales():
         }}
         
         .main {{
-            background-color: {PALETA_CORPORATIVA['fondo']};
+            background-color: {bg_principal};
         }}
         
         .header-principal {{
@@ -150,18 +168,18 @@ def aplicar_estilos_globales():
         }}
         
         .tarjeta-kpi {{
-            background: white;
+            background: {bg_tarjeta};
             padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            border-left: 4px solid {PALETA_CORPORATIVA['acento']};
+            box-shadow: {sombra};
+            border-left: 4px solid #10B981;
             transition: transform 0.2s, box-shadow 0.2s;
             height: 100%;
         }}
         
         .tarjeta-kpi:hover {{
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
         }}
         
         .kpi-icono {{
@@ -172,13 +190,13 @@ def aplicar_estilos_globales():
         .kpi-valor {{
             font-size: 2.2rem;
             font-weight: 700;
-            color: {PALETA_CORPORATIVA['primario']};
+            color: {color_texto};
             margin: 0.5rem 0;
         }}
         
         .kpi-etiqueta {{
             font-size: 0.9rem;
-            color: {PALETA_CORPORATIVA['neutro']};
+            color: {color_texto_secundario};
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -193,22 +211,24 @@ def aplicar_estilos_globales():
         }}
         
         .kpi-cambio.positivo {{
-            background-color: rgba(16, 185, 129, 0.1);
-            color: {PALETA_CORPORATIVA['exito']};
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10B981;
+            font-weight: 600;
         }}
         
         .kpi-cambio.negativo {{
-            background-color: rgba(239, 68, 68, 0.1);
-            color: {PALETA_CORPORATIVA['error']};
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #EF4444;
+            font-weight: 600;
         }}
         
         .seccion-titulo {{
             font-size: 1.8rem;
             font-weight: 700;
-            color: {PALETA_CORPORATIVA['primario']};
+            color: {color_texto};
             margin: 2.5rem 0 1.5rem 0;
             padding-bottom: 0.75rem;
-            border-bottom: 3px solid {PALETA_CORPORATIVA['acento']};
+            border-bottom: 3px solid #10B981;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -216,25 +236,31 @@ def aplicar_estilos_globales():
         
         .stTabs [data-baseweb="tab-list"] {{
             gap: 8px;
-            background-color: white;
+            background-color: {bg_secundario};
             padding: 1rem;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: {sombra};
+            overflow-x: auto;
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch;
         }}
         
         .stTabs [data-baseweb="tab"] {{
-            padding: 12px 24px;
-            background-color: {PALETA_CORPORATIVA['fondo']};
+            padding: 12px 20px;
+            background-color: {bg_principal};
             border-radius: 8px;
             font-weight: 600;
-            color: {PALETA_CORPORATIVA['neutro']};
-            border: 2px solid transparent;
+            color: {color_texto_secundario};
+            border: 2px solid {color_borde};
             transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
         }}
         
         .stTabs [data-baseweb="tab"]:hover {{
             background-color: rgba(102, 126, 234, 0.1);
-            border-color: {PALETA_CORPORATIVA['secundario']};
+            border-color: #667eea;
+            color: {color_texto};
         }}
         
         .stTabs [aria-selected="true"] {{
@@ -247,41 +273,67 @@ def aplicar_estilos_globales():
             text-align: center;
             padding: 2rem;
             margin-top: 4rem;
-            border-top: 2px solid #E5E7EB;
-            color: {PALETA_CORPORATIVA['neutro']};
+            border-top: 2px solid {color_borde};
+            color: {color_texto_secundario};
             font-size: 0.9rem;
         }}
         
         .firma-autor {{
             font-weight: 700;
-            color: {PALETA_CORPORATIVA['secundario']};
+            color: #667eea;
             font-size: 1.1rem;
         }}
         
         div[data-testid="stExpander"] {{
-            background: white;
+            background: {bg_tarjeta};
             border-radius: 12px;
-            border: 2px solid #E5E7EB;
+            border: 2px solid {color_borde};
             margin-bottom: 1rem;
         }}
         
         div[data-testid="stExpander"] summary {{
             font-weight: 600;
-            color: {PALETA_CORPORATIVA['primario']};
+            color: {color_texto};
             font-size: 1.05rem;
         }}
         
-        .stSelectbox label, .stMultiSelect label, .stDateInput label, .stSlider label {{
+        .stSelectbox label, .stMultiSelect label, .stDateInput label, .stSlider label, .stCheckbox label {{
             font-weight: 600;
-            color: {PALETA_CORPORATIVA['primario']};
+            color: {color_texto} !important;
             font-size: 0.95rem;
         }}
         
         .tooltip-info {{
             font-size: 0.85rem;
-            color: {PALETA_CORPORATIVA['neutro']};
+            color: {color_texto_secundario};
             font-style: italic;
             margin-top: 0.25rem;
+        }}
+        
+        /* Asegurar legibilidad en todos los elementos de Streamlit */
+        .stMarkdown, .stText, p, span, div {{
+            color: {color_texto} !important;
+        }}
+        
+        h1, h2, h3, h4, h5, h6 {{
+            color: {color_texto} !important;
+        }}
+        
+        /* Estilos responsive para navegación */
+        @media (max-width: 768px) {{
+            .stTabs [data-baseweb="tab-list"] {{
+                overflow-x: scroll;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }}
+            
+            .tarjeta-kpi {{
+                margin-bottom: 1rem;
+            }}
+            
+            .header-principal h1 {{
+                font-size: 1.8rem;
+            }}
         }}
     </style>
     """, unsafe_allow_html=True)
