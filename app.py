@@ -1328,6 +1328,7 @@ with tab_ml:
                 color='frecuencia',
                 color_continuous_scale='Viridis'
             )
+            fig_recomendaciones.update_traces(hovertemplate='<b>%{y}</b><br>Compras: %{x:,}<extra></extra>')
             fig_recomendaciones.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
             st.plotly_chart(fig_recomendaciones, use_container_width=True)
         except Exception as e:
@@ -1410,6 +1411,7 @@ with tab_finanzas:
             color='margen_%',
             color_continuous_scale='RdYlGn'
         )
+        fig_margenes.update_traces(hovertemplate='<b>%{x}</b><br>Margen: %{y:.1f}%<extra></extra>')
         fig_margenes.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig_margenes, use_container_width=True)
     
@@ -1427,7 +1429,11 @@ with tab_finanzas:
             labels=LABELS,
             markers=True
         )
-        fig_beneficio.update_traces(line_color='#10B981', line_width=3)
+        fig_beneficio.update_traces(
+            line_color='#10B981', 
+            line_width=3,
+            hovertemplate='<b>%{x}</b><br>Beneficio: $%{y:,.0f}<extra></extra>'
+        )
         fig_beneficio.update_layout(height=400)
         st.plotly_chart(fig_beneficio, use_container_width=True)
     
@@ -1483,22 +1489,26 @@ with tab_operacional:
     
     with col_op_viz1:
         st.subheader("Pedidos por Día de Semana")
+        from utils.traducciones import traducir_dia_semana
         temp_df = datos_filtrados.copy()
         temp_df['dia_semana'] = pd.to_datetime(temp_df['date']).dt.day_name()
         pedidos_dia = temp_df.groupby('dia_semana')['transaction_id'].nunique().reset_index()
         dias_orden = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         pedidos_dia['dia_semana'] = pd.Categorical(pedidos_dia['dia_semana'], categories=dias_orden, ordered=True)
         pedidos_dia = pedidos_dia.sort_values('dia_semana')
+        # Traducir días al español
+        pedidos_dia['dia_semana_es'] = pedidos_dia['dia_semana'].apply(traducir_dia_semana)
         
         fig_dias_op = px.bar(
             pedidos_dia,
-            x='dia_semana',
+            x='dia_semana_es',
             y='transaction_id',
             title='Distribución de Pedidos por Día',
             labels=LABELS,
             color='transaction_id',
             color_continuous_scale='Blues'
         )
+        fig_dias_op.update_traces(hovertemplate='<b>%{x}</b><br>Pedidos: %{y:,}<extra></extra>')
         fig_dias_op.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig_dias_op, use_container_width=True)
     
@@ -1513,6 +1523,7 @@ with tab_operacional:
             labels=LABELS,
             color_discrete_sequence=['#667eea']
         )
+        fig_cantidad.update_traces(hovertemplate='Unidades: %{x:,.0f}<br>Pedidos: %{y:,}<extra></extra>')
         fig_cantidad.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig_cantidad, use_container_width=True)
     
@@ -1576,6 +1587,7 @@ with tab_operacional:
         color='unidades_vendidas',
         color_continuous_scale='Viridis'
     )
+    fig_rotacion.update_traces(hovertemplate='<b>%{y}</b><br>Velocidad: %{x:,.0f}<br>Unidades: %{marker.color:,.0f}<extra></extra>')
     fig_rotacion.update_layout(height=500, yaxis={'categoryorder': 'total ascending'})
     st.plotly_chart(fig_rotacion, use_container_width=True)
 
