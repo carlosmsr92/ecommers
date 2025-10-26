@@ -3,7 +3,7 @@ import streamlit as st
 from sqlalchemy import text
 from database.schema import get_engine, get_session
 from datetime import datetime, timedelta
-from utils.traducciones import aplicar_traducciones_df
+from utils.traducciones import aplicar_traducciones_df, aplicar_traducciones_paises_df
 
 @st.cache_data(ttl=300)
 def load_data_from_postgres():
@@ -34,6 +34,10 @@ def load_data_from_postgres():
                 transactions_df = aplicar_traducciones_df(transactions_df, 'subcategory')
             if 'subcategory' in products_df.columns:
                 products_df = aplicar_traducciones_df(products_df, 'subcategory')
+            
+            # Traducir países al español
+            transactions_df = aplicar_traducciones_paises_df(transactions_df, 'country')
+            customers_df = aplicar_traducciones_paises_df(customers_df, 'country')
             
             return transactions_df, customers_df, products_df
             
@@ -66,6 +70,10 @@ def load_data_from_postgres():
             transactions_df = aplicar_traducciones_df(transactions_df, 'subcategory')
         if 'subcategory' in products_df.columns:
             products_df = aplicar_traducciones_df(products_df, 'subcategory')
+        
+        # Traducir países al español
+        transactions_df = aplicar_traducciones_paises_df(transactions_df, 'country')
+        customers_df = aplicar_traducciones_paises_df(customers_df, 'country')
         
         return transactions_df, customers_df, products_df
         
