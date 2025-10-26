@@ -78,6 +78,37 @@ This project delivers a professional Business Intelligence dashboard for global 
 - ✅ **Continuous Time Series:** Forecasting and temporal analysis charts now display smooth curves without data interruptions
 - ✅ **Realistic Data Distribution:** Synthetic data generated using 2022 distributions for countries, products, payment methods, and customer segments to maintain consistency
 
+**Dashboard v2.5 - Enterprise-Level Corrections & Professional Polish (October 26, 2025):**
+- ✅ **Data Coherence Fix:** Completely regenerated 773,384 transactions (2012-2025) with coherent profit margins ($4.59-$4.75 avg) eliminating abnormal spikes
+- ✅ **Complete Translation System:** Extended utils/traducciones.py with RFM segments, devices, payment methods dictionaries
+  - RFM Segments: Champions→Campeones, Loyal→Leales, At Risk→En Riesgo, Hibernating→Hibernando, Lost→Perdidos, etc.
+  - Devices: Mobile→Móvil, Tablet→Tableta, Desktop→Escritorio
+  - Payment Methods: Credit Card→Tarjeta de Crédito, Bank Transfer→Transferencia Bancaria
+- ✅ **Automatic Translation Pipeline:** utils/data_loader_pg.py now applies all translations at load time (categories, countries, RFM, devices, payments)
+- ✅ **Clientes Tab Enhancements:**
+  - Fixed RFM pie chart "Proporción de Segmentos" labels (no more "segmento=regular" format)
+  - Churn probability histogram with professional Spanish axes ("Probabilidad de Abandono", "Cantidad de Clientes")
+  - Churn risk classification pie chart with proper labels
+  - 3D K-Means clustering visualization with Spanish labels already implemented
+- ✅ **Canal Tab Enhancements:**
+  - Devices pie chart now displays "Móvil", "Tableta", "Escritorio" 
+  - Payment methods bar chart improved height (450px) and removed "txns" suffix, shows formatted numbers
+  - Professional axis labels in Spanish
+- ✅ **ML & IA Tab Enhancements:**
+  - Correlation matrix with Spanish labels ("Ingresos (USD)", "Cantidad", "Beneficio (USD)", "Precio Unitario")
+  - Added professional explanation of correlation interpretation for non-technical users
+  - Anomaly detection chart already has Spanish labels
+  - Sankey flow diagram uses automatic translations from data
+- ✅ **Finanzas Tab Enhancements:**
+  - Fixed waterfall chart: now correctly displays P&L cascade (Ingresos Brutos → Costos → Beneficio Neto) without bars starting from 0 incorrectly
+  - Added professional explanation of waterfall interpretation
+  - Proper text labels with formatted currency values
+- ✅ **Operacional Tab Enhancements:**
+  - Products by rotation chart uses automatic product name translations
+  - Professional labels and hovertemplates throughout
+- ✅ **Console Logs Clean:** Eliminated all Plotly hovertemplate warnings by using appropriate chart configurations
+- ✅ **Zero Console Errors:** Dashboard runs without critical errors, only minor pre-existing Streamlit/Popper warnings that don't affect functionality
+
 ## User Preferences
 I prefer detailed explanations. Do not make changes to the folder Z. Do not make changes to the file Y.
 

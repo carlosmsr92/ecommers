@@ -1,6 +1,66 @@
 """
-Traducciones de categorías, países y días de semana al español
+Traducciones completas al español para el dashboard
+Incluye: categorías, países, días, segmentos RFM, dispositivos, métodos de pago
 """
+
+import pandas as pd
+
+# Diccionario de traducción de segmentos RFM
+SEGMENTOS_RFM_TRADUCCION = {
+    'Champions': 'Campeones',
+    'Loyal Customers': 'Clientes Leales',
+    'Potential Loyalists': 'Potencialmente Leales',
+    'Recent Customers': 'Clientes Recientes',
+    'Promising': 'Prometedores',
+    'Customers Needing Attention': 'Necesitan Atención',
+    'About To Sleep': 'Por Dormir',
+    'At Risk': 'En Riesgo',
+    'Cant Lose Them': 'No Perderlos',
+    'Hibernating': 'Hibernando',
+    'Lost': 'Perdidos',
+    # Versiones alternativas
+    'Cant Lose': 'No Perderlos',
+    'Lost Customers': 'Perdidos',
+    # Minúsculas también
+    'champions': 'Campeones',
+    'loyal customers': 'Clientes Leales',
+    'potential loyalists': 'Potencialmente Leales',
+    'recent customers': 'Clientes Recientes',
+    'promising': 'Prometedores',
+    'customers needing attention': 'Necesitan Atención',
+    'about to sleep': 'Por Dormir',
+    'at risk': 'En Riesgo',
+    'cant lose them': 'No Perderlos',
+    'hibernating': 'Hibernando',
+    'lost': 'Perdidos'
+}
+
+# Diccionario de traducción de dispositivos
+DISPOSITIVOS_TRADUCCION = {
+    'Mobile': 'Móvil',
+    'Tablet': 'Tableta',
+    'Desktop': 'Escritorio',
+    'mobile': 'Móvil',
+    'tablet': 'Tableta',
+    'desktop': 'Escritorio'
+}
+
+# Diccionario de traducción de métodos de pago
+METODOS_PAGO_TRADUCCION = {
+    'Credit Card': 'Tarjeta de Crédito',
+    'Debit Card': 'Tarjeta de Débito',
+    'PayPal': 'PayPal',
+    'Bank Transfer': 'Transferencia Bancaria',
+    'Cash': 'Efectivo',
+    'Wire Transfer': 'Transferencia',
+    # Minúsculas
+    'credit card': 'Tarjeta de Crédito',
+    'debit card': 'Tarjeta de Débito',
+    'paypal': 'PayPal',
+    'bank transfer': 'Transferencia Bancaria',
+    'cash': 'Efectivo',
+    'wire transfer': 'Transferencia'
+}
 
 # Diccionario de traducción de países
 PAISES_TRADUCCION = {
@@ -297,6 +357,78 @@ def aplicar_traducciones_paises_df(df, columna='country'):
     """Aplica traducciones de países a una columna de DataFrame"""
     if columna in df.columns:
         df[columna] = df[columna].apply(traducir_pais)
+    return df
+
+def traducir_segmento_rfm(segmento):
+    """Traduce un segmento RFM del inglés al español"""
+    if not segmento or pd.isna(segmento):
+        return segmento
+    
+    # Convertir a string y buscar traducción (case-insensitive)
+    segmento_str = str(segmento).strip()
+    
+    # Buscar traducción exacta
+    if segmento_str in SEGMENTOS_RFM_TRADUCCION:
+        return SEGMENTOS_RFM_TRADUCCION[segmento_str]
+    
+    # Buscar case-insensitive
+    for key, value in SEGMENTOS_RFM_TRADUCCION.items():
+        if key.lower() == segmento_str.lower():
+            return value
+    
+    # Si no hay traducción, devolver como está
+    return segmento_str
+
+def traducir_dispositivo(dispositivo):
+    """Traduce un tipo de dispositivo del inglés al español"""
+    if not dispositivo or pd.isna(dispositivo):
+        return dispositivo
+    
+    dispositivo_str = str(dispositivo).strip()
+    
+    # Buscar traducción exacta o case-insensitive
+    if dispositivo_str in DISPOSITIVOS_TRADUCCION:
+        return DISPOSITIVOS_TRADUCCION[dispositivo_str]
+    
+    for key, value in DISPOSITIVOS_TRADUCCION.items():
+        if key.lower() == dispositivo_str.lower():
+            return value
+    
+    return dispositivo_str
+
+def traducir_metodo_pago(metodo):
+    """Traduce un método de pago del inglés al español"""
+    if not metodo or pd.isna(metodo):
+        return metodo
+    
+    metodo_str = str(metodo).strip()
+    
+    # Buscar traducción exacta o case-insensitive
+    if metodo_str in METODOS_PAGO_TRADUCCION:
+        return METODOS_PAGO_TRADUCCION[metodo_str]
+    
+    for key, value in METODOS_PAGO_TRADUCCION.items():
+        if key.lower() == metodo_str.lower():
+            return value
+    
+    return metodo_str
+
+def aplicar_traducciones_rfm_df(df, columna='rfm_segment'):
+    """Aplica traducciones de segmentos RFM a una columna de DataFrame"""
+    if columna in df.columns:
+        df[columna] = df[columna].apply(traducir_segmento_rfm)
+    return df
+
+def aplicar_traducciones_dispositivos_df(df, columna='device_type'):
+    """Aplica traducciones de dispositivos a una columna de DataFrame"""
+    if columna in df.columns:
+        df[columna] = df[columna].apply(traducir_dispositivo)
+    return df
+
+def aplicar_traducciones_metodos_pago_df(df, columna='payment_method'):
+    """Aplica traducciones de métodos de pago a una columna de DataFrame"""
+    if columna in df.columns:
+        df[columna] = df[columna].apply(traducir_metodo_pago)
     return df
 
 # Diccionario de labels profesionales para gráficos

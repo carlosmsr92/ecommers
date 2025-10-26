@@ -868,7 +868,10 @@ with tab_clientes:
             title='Proporción de Segmentos',
             hole=0.4
         )
-        fig_rfm_pie.update_traces(textposition='inside', textinfo='percent+label')
+        fig_rfm_pie.update_traces(
+            textposition='inside', 
+            textinfo='percent+label'
+        )
         fig_rfm_pie.update_layout(height=400)
         st.plotly_chart(fig_rfm_pie, use_container_width=True)
     
@@ -1079,8 +1082,12 @@ with tab_clientes:
             labels=LABELS,
             color_discrete_sequence=['#EF4444']
         )
-        fig_churn.update_traces(hovertemplate='Probabilidad: %{x:.1%}<br>Clientes: %{y:,}<extra></extra>')
-        fig_churn.update_layout(height=400)
+        fig_churn.update_traces(hovertemplate='<b>Probabilidad de Churn:</b> %{x:.1%}<br><b>Cantidad:</b> %{y:,} clientes<extra></extra>')
+        fig_churn.update_layout(
+            height=400,
+            xaxis_title="Probabilidad de Abandono",
+            yaxis_title="Cantidad de Clientes"
+        )
         st.plotly_chart(fig_churn, use_container_width=True)
     
     with col_churn2:
@@ -1101,7 +1108,10 @@ with tab_clientes:
             color='riesgo',
             color_discrete_map={'Alto (>70%)': '#EF4444', 'Medio (40-70%)': '#F59E0B', 'Bajo (<40%)': '#10B981'}
         )
-        fig_churn_pie.update_traces(textposition='inside', textinfo='percent+label')
+        fig_churn_pie.update_traces(
+            textposition='inside', 
+            textinfo='percent+label'
+        )
         fig_churn_pie.update_layout(height=400)
         st.plotly_chart(fig_churn_pie, use_container_width=True)
     
@@ -1151,7 +1161,10 @@ with tab_canal:
             title='Distribución de Ingresos por Dispositivo',
             hole=0.4
         )
-        fig_dispositivos.update_traces(textposition='inside', textinfo='percent+label')
+        fig_dispositivos.update_traces(
+            textposition='inside', 
+            textinfo='percent+label'
+        )
         fig_dispositivos.update_layout(height=400)
         st.plotly_chart(fig_dispositivos, use_container_width=True)
     
@@ -1191,11 +1204,16 @@ with tab_canal:
         text='transacciones'
     )
     fig_pagos.update_traces(
-        texttemplate='%{text} txns', 
+        texttemplate='%{text:,}', 
         textposition='outside',
-        hovertemplate='<b>%{x}</b><br>Ingresos: $%{y:,.0f}<br>Transacciones: %{text:,}<extra></extra>'
+        hovertemplate='<b>Método:</b> %{x}<br><b>Ingresos:</b> $%{y:,.0f}<br><b>Transacciones:</b> %{text:,}<extra></extra>'
     )
-    fig_pagos.update_layout(height=400, showlegend=False)
+    fig_pagos.update_layout(
+        height=450, 
+        showlegend=False,
+        yaxis_title="Ingresos (USD)",
+        xaxis_title="Método de Pago"
+    )
     st.plotly_chart(fig_pagos, use_container_width=True)
     
     st.subheader("Flujo de Conversión (Diagrama Sankey)")
@@ -1292,21 +1310,36 @@ with tab_ml:
         
         st.subheader("📊 Análisis de Correlación de Variables")
         
+        st.markdown("""
+        <p style='color: #666; font-size: 0.95rem; margin-bottom: 1.5rem;'>
+        La matriz de correlación muestra las relaciones entre variables clave. Valores cercanos a +1 indican correlación positiva fuerte 
+        (cuando una sube, la otra también), valores cercanos a -1 indican correlación negativa (cuando una sube, la otra baja), 
+        y valores cercanos a 0 indican poca o ninguna relación.
+        </p>
+        """, unsafe_allow_html=True)
+        
         try:
             correlacion_cols = ['total_amount_usd', 'quantity', 'profit', 'unit_price']
+            labels_es = ['Ingresos (USD)', 'Cantidad', 'Beneficio (USD)', 'Precio Unitario']
             corr_data = datos_filtrados[correlacion_cols].corr()
+            
+            # Renombrar índices y columnas con labels en español
+            corr_data.index = labels_es
+            corr_data.columns = labels_es
             
             fig_corr = px.imshow(
                 corr_data,
                 labels=dict(color="Correlación"),
-                x=correlacion_cols,
-                y=correlacion_cols,
-                title='Matriz de Correlación',
+                x=labels_es,
+                y=labels_es,
+                title='Matriz de Correlación de Variables Financieras',
                 color_continuous_scale='RdBu_r',
                 zmin=-1,
-                zmax=1
+                zmax=1,
+                text_auto=True
             )
             fig_corr.update_layout(height=500)
+            fig_corr.update_traces(hovertemplate='<b>%{x}</b> vs <b>%{y}</b><br>Correlación: %{z:.2f}<extra></extra>')
             st.plotly_chart(fig_corr, use_container_width=True)
         except Exception as e:
             st.warning(f"No se pudo generar matriz de correlación: {str(e)}")
@@ -1362,31 +1395,36 @@ with tab_finanzas:
     with col_pl4:
         st.metric("Margen de Beneficio", f"{margen_beneficio:.2f}%", delta="+1.5%")
     
-    st.subheader("Análisis Waterfall Financiero")
+    st.subheader("Análisis Waterfall Financiero (P&L)")
+    
+    st.markdown("""
+    <p style='color: #666; font-size: 0.95rem; margin-bottom: 1.5rem;'>
+    El gráfico de cascada muestra cómo los ingresos brutos se transforman en beneficio neto después de descontar costos operativos. 
+    Las barras verdes representan ingresos, las rojas costos y descuentos, y la barra azul el resultado final.
+    </p>
+    """, unsafe_allow_html=True)
     
     try:
-        waterfall_data = {
-            'Medida': ['Ingresos Brutos', 'Costos Operativos', 'Beneficio Neto'],
-            'Valor': [total_ingresos, -costo_total, total_beneficio],
-            'Tipo': ['total', 'relative', 'total']
-        }
-        
         fig_waterfall = go.Figure(go.Waterfall(
-            name="Financiero",
+            name="Flujo Financiero",
             orientation="v",
             measure=["absolute", "relative", "total"],
-            x=['Ingresos Brutos', 'Costos', 'Beneficio Neto'],
-            y=[total_ingresos, -costo_total, total_beneficio],
-            connector={"line": {"color": "rgb(63, 63, 63)"}},
+            x=['Ingresos Brutos', 'Costos Operativos', 'Beneficio Neto'],
+            y=[total_ingresos, -costo_total, 0],  # El total se calcula automáticamente
+            text=[f"${total_ingresos:,.0f}", f"-${costo_total:,.0f}", f"${total_beneficio:,.0f}"],
+            textposition="outside",
+            connector={"line": {"color": "rgb(100, 100, 100)", "width": 2}},
             decreasing={"marker": {"color": "#EF4444"}},
             increasing={"marker": {"color": "#10B981"}},
             totals={"marker": {"color": "#3B82F6"}}
         ))
         
         fig_waterfall.update_layout(
-            title="Cascada Financiera",
-            height=400,
-            showlegend=True
+            title="Cascada de P&L: De Ingresos a Beneficio",
+            height=450,
+            showlegend=False,
+            yaxis_title="Monto (USD)",
+            xaxis_title=""
         )
         st.plotly_chart(fig_waterfall, use_container_width=True)
     except Exception as e:

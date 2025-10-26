@@ -3,7 +3,13 @@ import streamlit as st
 from sqlalchemy import text
 from database.schema import get_engine, get_session
 from datetime import datetime, timedelta
-from utils.traducciones import aplicar_traducciones_df, aplicar_traducciones_paises_df
+from utils.traducciones import (
+    aplicar_traducciones_df, 
+    aplicar_traducciones_paises_df,
+    aplicar_traducciones_rfm_df,
+    aplicar_traducciones_dispositivos_df,
+    aplicar_traducciones_metodos_pago_df
+)
 
 @st.cache_data(ttl=300)
 def load_data_from_postgres():
@@ -38,6 +44,18 @@ def load_data_from_postgres():
             # Traducir países al español
             transactions_df = aplicar_traducciones_paises_df(transactions_df, 'country')
             customers_df = aplicar_traducciones_paises_df(customers_df, 'country')
+            
+            # Traducir segmentos RFM al español
+            if 'rfm_segment' in customers_df.columns:
+                customers_df = aplicar_traducciones_rfm_df(customers_df, 'rfm_segment')
+            
+            # Traducir dispositivos al español
+            if 'device_type' in transactions_df.columns:
+                transactions_df = aplicar_traducciones_dispositivos_df(transactions_df, 'device_type')
+            
+            # Traducir métodos de pago al español
+            if 'payment_method' in transactions_df.columns:
+                transactions_df = aplicar_traducciones_metodos_pago_df(transactions_df, 'payment_method')
             
             return transactions_df, customers_df, products_df
             
@@ -74,6 +92,18 @@ def load_data_from_postgres():
         # Traducir países al español
         transactions_df = aplicar_traducciones_paises_df(transactions_df, 'country')
         customers_df = aplicar_traducciones_paises_df(customers_df, 'country')
+        
+        # Traducir segmentos RFM al español
+        if 'rfm_segment' in customers_df.columns:
+            customers_df = aplicar_traducciones_rfm_df(customers_df, 'rfm_segment')
+        
+        # Traducir dispositivos al español
+        if 'device_type' in transactions_df.columns:
+            transactions_df = aplicar_traducciones_dispositivos_df(transactions_df, 'device_type')
+        
+        # Traducir métodos de pago al español
+        if 'payment_method' in transactions_df.columns:
+            transactions_df = aplicar_traducciones_metodos_pago_df(transactions_df, 'payment_method')
         
         return transactions_df, customers_df, products_df
         
