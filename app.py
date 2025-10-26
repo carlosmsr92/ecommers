@@ -269,7 +269,7 @@ with tab_overview:
     # Recomendaciones accionables
     recomendaciones_ejecutivas = [
         f"🔍 **Análisis Geográfico:** Explorar la pestaña 'Análisis Geográfico' para identificar mercados emergentes con alto potencial de crecimiento",
-        f"📊 **Forecasting:** Revisar las predicciones en 'Forecasting & Tendencias' para planificar inventario y presupuestos de los próximos 90 días",
+        f"📈 **Rendimiento Temporal:** Revisar 'Rendimiento & Análisis Temporal' para analizar tendencias, momentum e indicadores de crecimiento que guíen la planificación estratégica",
         f"👥 **Segmentación:** Analizar 'Segmentación de Clientes' para identificar clientes Champions y en riesgo de churn, personalizando estrategias",
         f"🤖 **ML Insights:** Activar análisis ML en el sidebar para detectar anomalías, patrones ocultos y oportunidades de optimización automática",
         f"💰 **Análisis Financiero:** Verificar márgenes y rentabilidad en 'Análisis Financiero' para asegurar la salud del negocio"
@@ -1444,7 +1444,7 @@ with tab_ml:
     crear_seccion_titulo("ML & IA Insights")
     
     if not filtros.get('mostrar_ml'):
-        st.warning("⚠️ Activa 'Mostrar Predicciones ML' en el sidebar para visualizar análisis avanzados de Machine Learning.")
+        st.warning("⚠️ Activa 'Mostrar Análisis ML' en el sidebar para visualizar insights avanzados de Machine Learning.")
     else:
         st.subheader("🔍 Detección de Anomalías (Isolation Forest)")
         
