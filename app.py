@@ -603,6 +603,7 @@ with tab_forecasting:
         
         try:
             from prophet import Prophet
+            import math
             
             prophet_df = serie_temporal[['periodo', 'ingresos']].copy()
             prophet_df.columns = ['ds', 'y']
@@ -624,7 +625,6 @@ with tab_forecasting:
                 modelo.fit(prophet_df, algorithm='LBFGS')
                 
                 # Mapear granularidad a frecuencia y períodos para mantener ~90 días de proyección
-                import math
                 if granularidad == 'Día':
                     freq = 'D'
                     periods = 90
