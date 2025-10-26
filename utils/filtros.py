@@ -57,6 +57,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Países",
             paises_disponibles,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por uno o más países (deja vacío para todos)"
         )
         filtros['paises'] = paises_seleccionados
@@ -72,6 +73,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Regiones",
             regiones_disponibles,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por una o más regiones"
         )
         filtros['regiones'] = regiones_seleccionadas
@@ -82,6 +84,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Categorías",
             categorias_disponibles,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por categorías de productos"
         )
         filtros['categorias'] = categorias_seleccionadas
@@ -97,6 +100,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Subcategorías",
             subcategorias_disponibles,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por subcategorías específicas"
         )
         filtros['subcategorias'] = subcategorias_seleccionadas
@@ -107,6 +111,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Segmentos de Cliente",
             segmentos_disponibles,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por segmento de cliente (VIP, Regular, etc.)"
         )
         filtros['segmentos'] = segmentos_seleccionados
@@ -117,6 +122,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Método de Pago",
             metodos_pago,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por método de pago utilizado"
         )
         filtros['metodos_pago'] = metodos_seleccionados
@@ -126,6 +132,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Tipo de Dispositivo",
             dispositivos,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por dispositivo usado para la compra"
         )
         filtros['dispositivos'] = dispositivos_seleccionados
@@ -135,6 +142,7 @@ def crear_filtros_sidebar(transacciones_df):
             "Fuente de Tráfico",
             fuentes_trafico,
             default=[],
+            placeholder="Elige opciones",
             help="Filtra por canal de adquisición"
         )
         filtros['fuentes_trafico'] = fuentes_seleccionadas
