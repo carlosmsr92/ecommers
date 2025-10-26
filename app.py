@@ -606,7 +606,8 @@ with tab_forecasting:
             
             prophet_df = serie_temporal[['periodo', 'ingresos']].copy()
             prophet_df.columns = ['ds', 'y']
-            prophet_df['ds'] = pd.to_datetime(prophet_df['ds'])
+            # Asegurar conversión correcta a datetime
+            prophet_df['ds'] = pd.to_datetime(prophet_df['ds'].astype(str))
             
             with st.spinner('Entrenando modelo Prophet...'):
                 modelo = Prophet(
@@ -876,13 +877,13 @@ with tab_productos:
     
     def clasificar_bcg(row):
         if row['ingresos'] >= mediana_ingresos and row['frecuencia'] >= mediana_frecuencia:
-            return 'Estrellas'
+            return 'Alto Rendimiento'
         elif row['ingresos'] >= mediana_ingresos and row['frecuencia'] < mediana_frecuencia:
-            return 'Interrogantes'
+            return 'Alto Potencial'
         elif row['ingresos'] < mediana_ingresos and row['frecuencia'] >= mediana_frecuencia:
-            return 'Vacas Lecheras'
+            return 'Consolidados'
         else:
-            return 'Perros'
+            return 'En Evaluación'
     
     productos_bcg['cuadrante'] = productos_bcg.apply(clasificar_bcg, axis=1)
     
@@ -902,10 +903,10 @@ with tab_productos:
         title='Matriz BCG de Productos',
         labels=LABELS,
         color_discrete_map={
-            'Estrellas': '#10B981',
-            'Vacas Lecheras': '#3B82F6',
-            'Interrogantes': '#F59E0B',
-            'Perros': '#EF4444'
+            'Alto Rendimiento': '#10B981',
+            'Consolidados': '#3B82F6',
+            'Alto Potencial': '#F59E0B',
+            'En Evaluación': '#EF4444'
         },
         log_y=True
     )
@@ -935,7 +936,7 @@ with tab_productos:
     st.plotly_chart(fig_bcg, use_container_width=True)
     
     col_resumen = st.columns(4)
-    for idx, cuadrante in enumerate(['Estrellas', 'Vacas Lecheras', 'Interrogantes', 'Perros']):
+    for idx, cuadrante in enumerate(['Alto Rendimiento', 'Consolidados', 'Alto Potencial', 'En Evaluación']):
         with col_resumen[idx]:
             count = len(productos_bcg[productos_bcg['cuadrante'] == cuadrante])
             st.metric(cuadrante, f"{count} productos")
@@ -1654,7 +1655,10 @@ with tab_finanzas:
         if mostrar_proyeccion:
             pendiente = z[0]
             if pendiente > 0:
-                st.success(f"📈 **Tendencia positiva:** El beneficio crece aproximadamente ${pendiente:,.0f}/mes. Si se mantiene, proyectamos ${proyeccion_df['proyeccion'].iloc[-1]:,.0f} en 3 meses.")
+                crecimiento_mensual = f"${pendiente:,.0f}"
+                proyeccion_3m = f"${proyeccion_df['proyeccion'].iloc[-1]:,.0f}"
+                st.success(f"📈 **Tendencia positiva:** El beneficio crece aproximadamente {crecimiento_mensual}/mes. "
+                          f"Si se mantiene esta tendencia, proyectamos {proyeccion_3m} en 3 meses.")
             elif pendiente < 0:
                 st.warning(f"📉 **Tendencia negativa:** El beneficio decrece aproximadamente ${abs(pendiente):,.0f}/mes. Requiere atención.")
             else:
