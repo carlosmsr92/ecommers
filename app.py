@@ -754,7 +754,7 @@ with tab_forecasting:
             x='dia_semana_es',
             y='total_amount_usd',
             title='Ingresos por Día de la Semana',
-            labels=LABELS,
+            labels={'dia_semana_es': '', 'total_amount_usd': 'Ingresos (USD)'},
             color='total_amount_usd',
             color_continuous_scale='Viridis'
         )
