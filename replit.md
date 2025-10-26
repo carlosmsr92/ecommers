@@ -3,6 +3,26 @@
 ## Overview
 This project delivers a professional Business Intelligence dashboard for global e-commerce analytics. It processes over 760,000 transactions spanning 16 years, combining real and synthetic data to provide advanced KPIs, multidimensional analysis, and predictive insights. The platform features an interactive Streamlit dashboard, a FastAPI RESTful API with ML endpoints, and robust data management with PostgreSQL and Parquet. Its core purpose is to enable data-driven decision-making for e-commerce businesses through comprehensive analytics, forecasting, customer segmentation, and product performance evaluation. The platform is designed for scalability and production readiness, aiming to unlock significant market potential by providing deep insights into sales, customer behavior, and operational efficiency.
 
+## Recent Changes (October 26, 2025)
+**Dashboard v2.0 - Complete Implementation:**
+- ✅ Implemented all 9 navigation tabs with full functionality (Resumen General, Geografía, Forecasting, Productos, Clientes, Canal, ML & IA, Finanzas, Operacional)
+- ✅ Created modular architecture: utils/ui_components.py, utils/filtros.py, utils/visualizaciones_avanzadas.py
+- ✅ Implemented collapsible filter system in sidebar without overlapping
+- ✅ Applied corporate color palette (#667eea, #f093fb, #10B981, #F59E0B, #EF4444, #3B82F6)
+- ✅ All content translated to professional Spanish
+- ✅ Added cmsr92 signature in footer
+- ✅ Prophet forecasting with 90-day predictions and confidence intervals
+- ✅ BCG matrix for product analysis (4 quadrants)
+- ✅ RFM customer segmentation with K-Means clustering
+- ✅ Sankey diagram for conversion flow analysis
+- ✅ Isolation Forest for anomaly detection
+- ✅ Waterfall chart for financial P&L analysis
+- ✅ Operational metrics with rotation analysis
+- ✅ Corrected MAPE calculation for historical data only
+- ✅ Added ML clustering validation for required columns
+- ✅ E2E testing completed successfully on all tabs
+- ✅ README v2.0 created in Spanish with complete documentation
+
 ## User Preferences
 I prefer detailed explanations. Do not make changes to the folder Z. Do not make changes to the file Y.
 
