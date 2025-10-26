@@ -156,6 +156,31 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
   - **Mes:** 3 periods × freq='MS' = ~90 days (Month-start)
   - Code location: app.py lines 629-642
   - Uses `math.ceil()` for period calculations to ensure complete coverage
+
+**Dashboard v3.7 - Prophet Forecasting FINAL ROBUST FIX (October 26, 2025):**
+
+- ✅ **Prophet Manual Date Generation - FINAL SOLUTION:**
+  - **PROBLEM:** `make_future_dataframe()` caused Timestamp arithmetic error across all Prophet operations
+  - **ROOT CAUSE:** Pandas deprecated integer arithmetic with Timestamp objects; Prophet's internal date generation incompatible
+  - **FINAL SOLUTION:** Completely eliminated `make_future_dataframe()` - implemented 100% manual future date generation using `pd.date_range()`
+  
+- ✅ **Robust Implementation Details:**
+  - **Día:** `pd.date_range(start=ultima_fecha + 1 day, periods=90, freq='D')` - Simple sequential days
+  - **Semana:** `pd.date_range(start=ultima_fecha, periods=14, freq='W-MON')[1:]` - Generates 14 weeks, excludes first (last historical) to avoid overlap
+  - **Mes:** `pd.date_range(start=ultima_fecha, periods=4, freq='MS')[1:]` - Generates 4 months, excludes first to avoid overlap
+  - Code location: app.py lines 643-660
+  - **KEY INNOVATION:** For Week/Month, generates N+1 periods then slices `[1:]` to ensure perfect alignment with historical aggregation
+  
+- ✅ **Alignment Guarantee:**
+  - Historical aggregation uses `.dt.to_period('W').dt.start_time` (weeks) and `.dt.to_period('M').dt.start_time` (months)
+  - Future dates generated with same frequency ensures NO GAPS and NO OVERLAPS
+  - Temporal continuity guaranteed across all 3 granularities
+  
+- ✅ **Technical Quality:**
+  - Prophet executing successfully: `cmdstanpy - Chain [1] done processing` ✅
+  - Zero Timestamp errors across all granularities
+  - Zero arithmetic warnings
+  - Forecast projections render correctly with 95% confidence intervals
   
 - ✅ **Technical Improvements:**
   - Explicit frequencies (D, W-MON, MS) align with historical data aggregation

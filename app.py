@@ -638,13 +638,20 @@ with tab_forecasting:
                 modelo.fit(prophet_df, algorithm='LBFGS')
                 
                 # Crear DataFrame futuro MANUALMENTE para evitar problemas con frecuencias
+                # Asegurar que las fechas futuras estén alineadas con la frecuencia correcta
                 ultima_fecha = prophet_df['ds'].max()
                 if granularidad == 'Día':
-                    fechas_futuras = pd.date_range(start=ultima_fecha + pd.Timedelta(days=1), periods=periods, freq='D')
+                    # Para días, simplemente sumamos 1 día y generamos secuencia diaria
+                    start_futuro = ultima_fecha + pd.Timedelta(days=1)
+                    fechas_futuras = pd.date_range(start=start_futuro, periods=periods, freq='D')
                 elif granularidad == 'Semana':
-                    fechas_futuras = pd.date_range(start=ultima_fecha + pd.Timedelta(weeks=1), periods=periods, freq='W-MON')
+                    # Para semanas, usar pd.date_range que automáticamente alinea a lunes
+                    # Generamos desde la próxima semana después de ultima_fecha
+                    fechas_futuras = pd.date_range(start=ultima_fecha, periods=periods+1, freq='W-MON')[1:]  # Excluir primera (última histórica)
                 else:  # Mes
-                    fechas_futuras = pd.date_range(start=ultima_fecha + pd.DateOffset(months=1), periods=periods, freq='MS')
+                    # Para meses, usar pd.date_range que automáticamente alinea a inicio de mes
+                    # Generamos desde el próximo mes después de ultima_fecha
+                    fechas_futuras = pd.date_range(start=ultima_fecha, periods=periods+1, freq='MS')[1:]  # Excluir primera (última histórica)
                 
                 futuro_df = pd.DataFrame({'ds': fechas_futuras})
                 futuro = pd.concat([prophet_df[['ds']], futuro_df], ignore_index=True)
