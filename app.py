@@ -787,8 +787,8 @@ with tab_productos:
     crear_descripcion_seccion(
         "Rendimiento y Estrategia de Productos",
         "Analiza qué productos generan más ingresos, cuáles tienen mejor margen y cómo se distribuyen por categorías. "
-        "La Matriz BCG clasifica tus productos en Estrellas (alta venta, alto crecimiento), Vacas Lecheras (alta venta, bajo crecimiento), "
-        "Interrogantes (baja venta, alto potencial) y Perros (bajo rendimiento)."
+        "La Matriz BCG clasifica tus productos en: **Alto Rendimiento** (altos ingresos, alta frecuencia), **Consolidados** (altos ingresos, frecuencia media), "
+        "**Alto Potencial** (potencial de crecimiento) y **En Evaluación** (requieren optimización o descontinuación)."
     )
     
     crear_seccion_titulo("Análisis de Productos")

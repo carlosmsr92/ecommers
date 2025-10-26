@@ -36,3 +36,41 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
 *   **ReportLab:** PDF report generation.
 *   **OpenPyXL:** Excel file export.
 *   **Pandas & NumPy:** Data manipulation and numerical operations.
+
+## Recent Changes & Version History
+
+**Dashboard v3.4 - Executive Professionalization & Bug Fixes (October 26, 2025):**
+
+- ✅ **Prophet Forecasting Error Fixed:**
+  - Resolved: "Addition/subtraction of integers and integer-arrays with Timestamp is no longer supported"
+  - Solution: Added explicit `.astype(str)` conversion before `pd.to_datetime()` (line 613)
+  - Now handles all granularities (Día/Semana/Mes) correctly with Period-to-string conversion
+  - Prophet executing successfully without errors
+
+- ✅ **BCG Matrix Terminology - Executive Professionalization:**
+  - REMOVED informal animal metaphors: "Estrellas", "Vacas Lecheras", "Interrogantes", "Perros"
+  - IMPLEMENTED executive-appropriate terminology:
+    * "Alto Rendimiento" (verde #10B981) - High revenue, high frequency products
+    * "Consolidados" (azul #3B82F6) - High revenue, medium frequency products
+    * "Alto Potencial" (naranja #F59E0B) - Growth potential products
+    * "En Evaluación" (rojo #EF4444) - Products requiring optimization or discontinuation
+  - Updated in 4 locations:
+    1. Classification function (lines 881-889)
+    2. Color map (lines 908-913)
+    3. Metric labels (line 942)
+    4. Descriptive text in tab_productos (lines 790-794)
+  - Verified: 0 occurrences of informal terms remain
+
+- ✅ **Profit Trend Message Spacing Fixed:**
+  - Improved readability with intermediate variables for amounts
+  - Enhanced professional tone with "esta tendencia" addition
+  - Clear separation prevents text concatenation issues
+  - Format: "Si se mantiene esta tendencia, proyectamos {amount} en 3 meses"
+
+**Technical Quality:**
+- ✅ Dashboard running without errors
+- ✅ Prophet forecasting stable across all granularities
+- ✅ All BCG references use professional terminology
+- ✅ Client/executive-ready presentation
+- ✅ Only pre-existing Plotly country names notice (non-blocking)
+- ✅ Architect review: PASS on all corrections
