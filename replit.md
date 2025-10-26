@@ -61,12 +61,18 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
     4. Descriptive text in tab_productos (lines 790-794)
   - Verified: 0 occurrences of informal terms remain
 
-- ✅ **Profit Trend Message Spacing Fixed:**
-  - **FINAL FIX:** Corrected f-string formatting that caused text to appear without spaces ("Sisemantieneestendencia")
-  - Solution: Build entire message in single f-string variable before display
-  - Changed from: multiline implicit concatenation → single line complete message
-  - Code: `mensaje = f"..."` then `st.success(mensaje)` ensures proper spacing
-  - Format now displays correctly: "...crece aproximadamente $34,620/mes. Si se mantiene esta tendencia, proyectamos $244,745 en 3 meses."
+- ✅ **Profit Evolution Chart - Visual-Only Approach (FINAL):**
+  - **PROBLEM ELIMINATED:** Removed problematic text that didn't format correctly ("Sisemantieneestendencia")
+  - **SOLUTION:** Made chart completely self-explanatory without text dependencies
+  - **Chart improvements:**
+    * Layering order: Tendencia (background) → Histórico (main) → Proyección (forecast)
+    * Trend line: Blue dashed with opacity 0.6 for subtle reference
+    * Historical: Green solid line (width 4, marker size 8) - prominently displayed
+    * Projection: Orange dotted line (width 3, diamond markers size 10) - clearly differentiated
+    * **Perfect connection:** Projection starts exactly where historical ends (shared point)
+    * Height increased: 400→450px for better visibility
+    * Horizontal legend at top to maximize chart space
+  - Result: Clean, professional, executive-ready visualization without text formatting issues
 
 **Technical Quality:**
 - ✅ Dashboard running without errors
