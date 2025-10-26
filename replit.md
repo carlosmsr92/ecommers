@@ -36,3 +36,57 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
 *   **ReportLab:** PDF report generation.
 *   **OpenPyXL:** Excel file export.
 *   **Pandas & NumPy:** Data manipulation and numerical operations.
+
+## Version History
+
+**Dashboard v3.0 - Data Regeneration & Global Realistic Distributions (October 26, 2025):**
+- ✅ **Complete Data Regeneration with Realistic Global Distributions:**
+  - Applied stratified sampling to real UK data (reduced from 354k to 53k transactions for balance)
+  - Generated 375,500 new synthetic transactions with globally realistic distributions
+  - **Final dataset: 472,211 transactions** (down from 773,384 to achieve better quality over quantity)
+  - **Country Distribution (Realistic Global E-commerce):**
+    - United States: 19.13% (previously 0% - now appears as major market!) ✅
+    - United Kingdom: 24.00% (previously 89% - now balanced) ✅
+    - Germany: 9.81%, France: 7.30%, China: 7.13%
+    - Top 10 countries now represent diverse global markets
+  - **Category Distribution (Balanced & Varied):**
+    - Home (Hogar): 34.13% (previously 73% - now balanced) ✅
+    - Electronics (Electrónica): 14.25% (previously 0.89% - major increase!) ✅
+    - Fashion (Moda): 14.89%
+    - Groceries (Comestibles): 11.09%
+    - Books (Libros): 8.72%, Toys (Juguetes): 7.02%
+  - **Traffic Sources:** Evenly distributed (Direct 20%, Organic 20%, Paid Ads 20%, Social Media 13%, Email 13%, Referral 13%)
+  - **Customer Segments:** Uniformly distributed (VIP 33%, New 33%, Regular 33%)
+
+- ✅ **Extended Translation System:**
+  - **Categories:** Home→Hogar, Electronics→Electrónica, Fashion→Moda, Groceries→Comestibles ✅
+  - **Traffic Sources:** Direct→Directo, Organic→Orgánico, Paid Ads→Anuncios Pagados, Social Media→Redes Sociales, Email→Correo Electrónico, Referral→Referencia ✅
+  - **Customer Segments:** New→Nuevo, Regular→Regular, VIP→VIP ✅
+  - **Countries:** EIRE→Irlanda added to dictionary ✅
+  - All translations applied automatically via utils/data_loader_pg.py at data load time
+
+- ✅ **Enhanced Customer Dataset:**
+  - 4,338 unique customers
+  - Added RFM segmentation (9 segments: Champions, Loyal Customers, Recent Customers, Promising, At Risk, Hibernating, Lost, Potential Loyalists, Customers Needing Attention)
+  - Calculated lifetime_value (LTV) metric (average: $9,071.32)
+  - Calculated churn_probability using RFM-based model (average: 42.84%, distributed: 58% low risk, 31% medium risk, 10% high risk)
+  - Complete customer profiles with recency, frequency, monetary values
+
+- ✅ **Updated Products Dataset:**
+  - 29,120 unique products
+  - Linked to new transaction patterns
+  - Maintains subcategories in sync with main categories
+
+- ✅ **Technical Quality:**
+  - Dashboard runs without critical errors
+  - Only minor pre-existing Plotly warning (country names library update notice) - does not affect functionality
+  - All data files properly formatted and optimized (Parquet format)
+  - Consistent data relationships across transactions, customers, and products
+
+- ✅ **User Request Compliance:**
+  - Estados Unidos (United States) now appears as major market ✅
+  - Electrónica (Electronics) is now a major category ✅
+  - Hogar (Home) balanced with other categories ✅
+  - Greater variety of countries across continents ✅
+  - EIRE correctly translates to Irlanda ✅
+  - All filters and UI elements in Spanish ✅
