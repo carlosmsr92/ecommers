@@ -618,8 +618,8 @@ with tab_forecasting:
             
             prophet_df = serie_temporal[['periodo', 'ingresos']].copy()
             prophet_df.columns = ['ds', 'y']
-            # Convertir a datetime SIN usar astype(str) que rompe la frecuencia
-            prophet_df['ds'] = pd.to_datetime(prophet_df['ds'])
+            # Asegurar conversión correcta a datetime (convierte a string primero para limpiar tipos)
+            prophet_df['ds'] = pd.to_datetime(prophet_df['ds'].astype(str))
             # Ordenar cronológicamente
             prophet_df = prophet_df.sort_values('ds').reset_index(drop=True)
             
