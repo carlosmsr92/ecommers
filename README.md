@@ -83,7 +83,17 @@ Plataforma profesional de Business Intelligence que integra **Big Data**, **Mach
 - 💰 **Análisis Financiero**: P&L, waterfall, métricas financieras
 - ⚙️ **Métricas Operacionales**: KPIs operativos, eficiencia
 
-### 2. Sistema de Filtros Optimizado
+### 2. Tema Claro/Oscuro Dinámico
+
+**Toggle Inteligente de Modo:**
+- 🌙 **Modo Claro** (por defecto): Fondo blanco, texto oscuro, alta legibilidad
+- ☀️ **Modo Oscuro**: Fondo oscuro, texto claro, reducción de fatiga visual
+- Toggle ubicado en sidebar superior con cambio instantáneo
+- Persistencia de preferencia durante la sesión
+- Contraste optimizado para WCAG 2.1 AA
+- Adaptación automática de gráficos y KPIs
+
+### 3. Sistema de Filtros Optimizado
 
 **Filtros Colapsables Organizados:**
 - 📅 Periodo de Análisis (con presets y fechas personalizadas)
@@ -99,12 +109,14 @@ Plataforma profesional de Business Intelligence que integra **Big Data**, **Mach
 - Búsqueda activa en selectores múltiples
 - Labels claros y tooltips explicativos
 - Agrupación lógica por categorías
+- Navegación responsive con scroll horizontal en móviles
+- Media queries para pantallas pequeñas (<768px)
 
-### 3. Visualizaciones Avanzadas
+### 4. Visualizaciones Avanzadas
 
 **Gráficos Implementados:**
 - 📊 Heatmaps de correlación
-- 🌳 Treemaps jerárquicos
+- 🌳 Treemaps jerárquicos con tooltips limpios
 - ☀️ Sunburst diagrams
 - 💧 Waterfall charts (cascada)
 - 🔄 Sankey diagrams (flujos)
@@ -113,24 +125,35 @@ Plataforma profesional de Business Intelligence que integra **Big Data**, **Mach
 - 📉 Gráficos de cohortes
 - 🗺️ Mapas choropleth interactivos
 
-### 4. Análisis ML e IA
+**Optimización de Tooltips:**
+- Tooltips profesionales sin labels técnicos
+- Formato monetario consistente ($XXX,XXX)
+- Información contextual clara y relevante
+- Compatible con temas claro y oscuro
+
+### 5. Análisis ML e IA
 
 **Modelos Implementados:**
 - **Forecasting**: Prophet con intervalos de confianza 80% y 95%
-- **Clustering**: K-Means con optimización de clusters (elbow method)
+- **Clustering K-Means**: 
+  - Cálculo dinámico de métricas RFM desde transacciones filtradas
+  - 4 segmentos: Premium, Activo, En Riesgo, Inactivo
+  - Visualización 3D interactiva (Recencia, Frecuencia, Monetario)
+  - Validación automática de datos suficientes (mín. 100 transacciones)
+  - Manejo robusto de errores con mensajes en español
 - **Anomalías**: Isolation Forest para detección de outliers
 - **Churn Prediction**: Modelo basado en RFM y comportamiento
 - **Recomendaciones**: Market Basket Analysis y similitud
 - **Demand Forecasting**: Predicción de demanda por producto
 
 **Métricas de Evaluación:**
-- MAPE (Mean Absolute Percentage Error)
+- MAPE (Mean Absolute Percentage Error) - calculado solo en datos históricos
 - RMSE (Root Mean Squared Error)
 - R² (Coefficient of Determination)
 - Silhouette Score (clustering)
 - Precision/Recall (clasificación)
 
-### 5. Análisis Financiero Completo
+### 6. Análisis Financiero Completo
 
 **Métricas Implementadas:**
 - P&L (Profit & Loss Statement)

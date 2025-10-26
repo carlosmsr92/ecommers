@@ -32,11 +32,18 @@ from utils.filtros import crear_filtros_sidebar, aplicar_filtros
 from utils.data_loader_pg import load_or_generate_data
 
 # Toggle de modo claro/oscuro en el sidebar superior
+if 'modo_oscuro' not in st.session_state:
+    st.session_state.modo_oscuro = False
+
 with st.sidebar:
-    modo_oscuro = st.checkbox("🌙 Modo Oscuro", value=False, help="Cambia entre modo claro y oscuro para mejor legibilidad")
+    label_toggle = "☀️ Modo Claro" if st.session_state.modo_oscuro else "🌙 Modo Oscuro"
+    if st.checkbox(label_toggle, value=st.session_state.modo_oscuro, key='toggle_modo', help="Cambia entre modo claro y oscuro para mejor legibilidad"):
+        st.session_state.modo_oscuro = True
+    else:
+        st.session_state.modo_oscuro = False
     st.markdown("---")
 
-aplicar_estilos_globales(modo_oscuro=modo_oscuro)
+aplicar_estilos_globales(modo_oscuro=st.session_state.modo_oscuro)
 
 @st.cache_resource
 def cargar_datos():
@@ -322,7 +329,6 @@ with tab_geografia:
         datos_tree_geo = datos_filtrados.groupby(['country', 'city', 'category']).agg({
             'total_amount_usd': 'sum'
         }).reset_index()
-        datos_tree_geo['ingresos_formateados'] = datos_tree_geo['total_amount_usd'].apply(lambda x: f"${x:,.0f}")
         
         fig_tree = px.treemap(
             datos_tree_geo,
@@ -330,14 +336,13 @@ with tab_geografia:
             values='total_amount_usd',
             color='total_amount_usd',
             color_continuous_scale='RdYlGn',
-            title='Jerarquía: País → Ciudad → Categoría',
-            custom_data=['ingresos_formateados']
+            title='Jerarquía: País → Ciudad → Categoría'
         )
         
         fig_tree.update_traces(
-            hovertemplate='<b>%{label}</b><br>Ingresos: %{value:$,.0f}<extra></extra>',
-            textinfo='label+value',
-            texttemplate='<b>%{label}</b><br>$%{value:,.0f}'
+            hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<extra></extra>',
+            textinfo='label',
+            texttemplate='<b>%{label}</b>'
         )
         
         fig_tree.update_layout(height=400)
@@ -572,7 +577,6 @@ with tab_productos:
         datos_categoria = datos_filtrados.groupby(['category', 'subcategory']).agg({
             'total_amount_usd': 'sum'
         }).reset_index()
-        datos_categoria['ingresos_formateados'] = datos_categoria['total_amount_usd'].apply(lambda x: f"${x:,.0f}")
         
         fig_tree_cat = px.treemap(
             datos_categoria,
@@ -580,14 +584,13 @@ with tab_productos:
             values='total_amount_usd',
             title='Jerarquía de Categorías',
             color='total_amount_usd',
-            color_continuous_scale='Viridis',
-            custom_data=['ingresos_formateados']
+            color_continuous_scale='Viridis'
         )
         
         fig_tree_cat.update_traces(
-            hovertemplate='<b>%{label}</b><br>Ingresos: %{value:$,.0f}<extra></extra>',
-            textinfo='label+value',
-            texttemplate='<b>%{label}</b><br>$%{value:,.0f}'
+            hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<extra></extra>',
+            textinfo='label',
+            texttemplate='<b>%{label}</b>'
         )
         
         fig_tree_cat.update_layout(height=400)
