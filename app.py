@@ -630,46 +630,87 @@ with tab_forecasting:
             with col1:
                 fig_forecast = go.Figure()
                 
+                # Separar datos históricos y proyección
+                ultima_fecha_historica = prophet_df['ds'].max()
+                forecast_futuro = forecast[forecast['ds'] > ultima_fecha_historica]
+                forecast_historico = forecast[forecast['ds'] <= ultima_fecha_historica]
+                
+                # Datos históricos (puntos azules)
                 fig_forecast.add_trace(go.Scatter(
                     x=prophet_df['ds'],
                     y=prophet_df['y'],
                     mode='markers',
                     name='Datos Históricos',
-                    marker=dict(color='#667eea', size=6)
+                    marker=dict(color='#667eea', size=8, opacity=0.6),
+                    hovertemplate='<b>Histórico</b><br>Fecha: %{x}<br>Ingresos: $%{y:,.0f}<extra></extra>'
                 ))
                 
+                # Línea de ajuste histórico (gris claro)
                 fig_forecast.add_trace(go.Scatter(
-                    x=forecast['ds'],
-                    y=forecast['yhat'],
+                    x=forecast_historico['ds'],
+                    y=forecast_historico['yhat'],
                     mode='lines',
-                    name='Predicción',
-                    line=dict(color='#10B981', width=3)
+                    name='Ajuste Histórico',
+                    line=dict(color='rgba(100, 100, 100, 0.3)', width=2, dash='dot'),
+                    showlegend=True
                 ))
                 
+                # PROYECCIÓN FUTURA (verde brillante)
                 fig_forecast.add_trace(go.Scatter(
-                    x=forecast['ds'],
-                    y=forecast['yhat_upper'],
+                    x=forecast_futuro['ds'],
+                    y=forecast_futuro['yhat'],
+                    mode='lines+markers',
+                    name='Proyección (90 días)',
+                    line=dict(color='#10B981', width=4),
+                    marker=dict(size=6),
+                    hovertemplate='<b>Proyección</b><br>Fecha: %{x}<br>Ingresos: $%{y:,.0f}<extra></extra>'
+                ))
+                
+                # Banda de confianza SOLO para proyección futura
+                fig_forecast.add_trace(go.Scatter(
+                    x=forecast_futuro['ds'],
+                    y=forecast_futuro['yhat_upper'],
                     fill=None,
                     mode='lines',
-                    line_color='rgba(16, 185, 129, 0.2)',
-                    showlegend=False
+                    line_color='rgba(16, 185, 129, 0)',
+                    showlegend=False,
+                    hoverinfo='skip'
                 ))
                 
                 fig_forecast.add_trace(go.Scatter(
-                    x=forecast['ds'],
-                    y=forecast['yhat_lower'],
+                    x=forecast_futuro['ds'],
+                    y=forecast_futuro['yhat_lower'],
                     fill='tonexty',
                     mode='lines',
-                    line_color='rgba(16, 185, 129, 0.2)',
-                    name='Intervalo de Confianza 95%'
+                    line_color='rgba(16, 185, 129, 0)',
+                    fillcolor='rgba(16, 185, 129, 0.2)',
+                    name='Intervalo Confianza 95%',
+                    hovertemplate='<b>Intervalo de Confianza</b><br>Superior: %{y:,.0f}<extra></extra>'
                 ))
                 
+                # Línea vertical separando histórico de proyección
+                fig_forecast.add_vline(
+                    x=ultima_fecha_historica, 
+                    line_dash="dash", 
+                    line_color="orange",
+                    line_width=2,
+                    annotation_text="← Histórico | Proyección →",
+                    annotation_position="top"
+                )
+                
                 fig_forecast.update_layout(
-                    title='Predicción de Ingresos (90 días)',
+                    title='Predicción de Ingresos: Histórico vs Proyección (90 días)',
                     xaxis_title='Fecha',
                     yaxis_title='Ingresos (USD)',
                     height=500,
-                    hovermode='x unified'
+                    hovermode='x unified',
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
+                    )
                 )
                 st.plotly_chart(fig_forecast, use_container_width=True)
             
@@ -792,9 +833,9 @@ with tab_productos:
         )
         
         fig_tree_cat.update_traces(
-            hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<extra></extra>',
-            textinfo='label',
-            texttemplate='<b>%{label}</b>'
+            textinfo='label+value',
+            texttemplate='<b>%{label}</b><br>$%{value:,.0f}',
+            hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<extra></extra>'
         )
         
         fig_tree_cat.update_layout(height=400)
@@ -845,15 +886,19 @@ with tab_productos:
     
     productos_bcg['cuadrante'] = productos_bcg.apply(clasificar_bcg, axis=1)
     
+    # Mejorar visualización: usar escala logarítmica y tamaños más uniformes
     productos_bcg_muestra = productos_bcg.sample(min(500, len(productos_bcg)))
+    
+    # Añadir tamaño normalizado para mejor visualización
+    productos_bcg_muestra['size_viz'] = np.log1p(productos_bcg_muestra['ingresos']) * 10
     
     fig_bcg = px.scatter(
         productos_bcg_muestra,
         x='frecuencia',
         y='ingresos',
         color='cuadrante',
-        size='ingresos',
-        hover_data={'producto': True, 'ingresos_formato': True, 'frecuencia': True, 'ingresos': False, 'cuadrante': False},
+        size='size_viz',
+        hover_data={'producto': True, 'ingresos_formato': True, 'frecuencia': True, 'ingresos': False, 'cuadrante': False, 'size_viz': False},
         title='Matriz BCG de Productos',
         labels=LABELS,
         color_discrete_map={
@@ -861,16 +906,32 @@ with tab_productos:
             'Vacas Lecheras': '#3B82F6',
             'Interrogantes': '#F59E0B',
             'Perros': '#EF4444'
-        }
+        },
+        log_y=True
     )
     
     fig_bcg.update_traces(
-        hovertemplate='<b>%{customdata[0]}</b><br>Ingresos: %{customdata[1]}<br>Frecuencia: %{customdata[2]} pedidos<extra></extra>'
+        hovertemplate='<b>%{customdata[0]}</b><br>Ingresos: %{customdata[1]}<br>Frecuencia: %{customdata[2]} pedidos<extra></extra>',
+        marker=dict(
+            line=dict(width=1, color='white'),
+            opacity=0.7
+        )
     )
     
-    fig_bcg.add_hline(y=mediana_ingresos, line_dash="dash", line_color="gray", annotation_text="Mediana Ingresos")
-    fig_bcg.add_vline(x=mediana_frecuencia, line_dash="dash", line_color="gray", annotation_text="Mediana Frecuencia")
-    fig_bcg.update_layout(height=500)
+    fig_bcg.add_hline(y=mediana_ingresos, line_dash="dash", line_color="white", line_width=2, annotation_text="Mediana Ingresos", annotation_position="right")
+    fig_bcg.add_vline(x=mediana_frecuencia, line_dash="dash", line_color="white", line_width=2, annotation_text="Mediana Frecuencia", annotation_position="top")
+    fig_bcg.update_layout(
+        height=550,
+        yaxis_title="Ingresos (USD) - Escala Logarítmica",
+        xaxis_title="Frecuencia de Compra (pedidos)",
+        legend=dict(
+            orientation="v",
+            yanchor="top",
+            y=0.99,
+            xanchor="right",
+            x=0.99
+        )
+    )
     st.plotly_chart(fig_bcg, use_container_width=True)
     
     col_resumen = st.columns(4)
@@ -1488,10 +1549,11 @@ with tab_finanzas:
         
         fig_waterfall.update_layout(
             title="Cascada de P&L: De Ingresos a Beneficio",
-            height=450,
+            height=550,
             showlegend=False,
             yaxis_title="Monto (USD)",
-            xaxis_title=""
+            xaxis_title="",
+            margin=dict(t=100, b=50)
         )
         st.plotly_chart(fig_waterfall, use_container_width=True)
     except Exception as e:
@@ -1670,7 +1732,11 @@ with tab_operacional:
             color_continuous_scale='Blues'
         )
         fig_dias_op.update_traces(hovertemplate='<b>%{x}</b><br>Pedidos: %{y:,}<extra></extra>')
-        fig_dias_op.update_layout(height=400, showlegend=False)
+        fig_dias_op.update_layout(
+            height=400, 
+            showlegend=False,
+            xaxis_title="Día de la Semana"
+        )
         st.plotly_chart(fig_dias_op, use_container_width=True)
     
     with col_op_viz2:
