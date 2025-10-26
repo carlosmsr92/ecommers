@@ -3,6 +3,7 @@ import streamlit as st
 from sqlalchemy import text
 from database.schema import get_engine, get_session
 from datetime import datetime, timedelta
+from utils.traducciones import aplicar_traducciones_df
 
 @st.cache_data(ttl=300)
 def load_data_from_postgres():
@@ -25,6 +26,14 @@ def load_data_from_postgres():
             customers_df['last_purchase_date'] = pd.to_datetime(customers_df['last_purchase_date'])
             if 'launch_date' in products_df.columns:
                 products_df['launch_date'] = pd.to_datetime(products_df['launch_date'])
+            
+            # Traducir categorías al español
+            transactions_df = aplicar_traducciones_df(transactions_df, 'category')
+            products_df = aplicar_traducciones_df(products_df, 'category')
+            if 'subcategory' in transactions_df.columns:
+                transactions_df = aplicar_traducciones_df(transactions_df, 'subcategory')
+            if 'subcategory' in products_df.columns:
+                products_df = aplicar_traducciones_df(products_df, 'subcategory')
             
             return transactions_df, customers_df, products_df
             
@@ -49,6 +58,14 @@ def load_data_from_postgres():
         customers_df['registration_date'] = pd.to_datetime(customers_df['registration_date'])
         customers_df['last_purchase_date'] = pd.to_datetime(customers_df['last_purchase_date'])
         products_df['launch_date'] = pd.to_datetime(products_df['launch_date'])
+        
+        # Traducir categorías al español
+        transactions_df = aplicar_traducciones_df(transactions_df, 'category')
+        products_df = aplicar_traducciones_df(products_df, 'category')
+        if 'subcategory' in transactions_df.columns:
+            transactions_df = aplicar_traducciones_df(transactions_df, 'subcategory')
+        if 'subcategory' in products_df.columns:
+            products_df = aplicar_traducciones_df(products_df, 'subcategory')
         
         return transactions_df, customers_df, products_df
         

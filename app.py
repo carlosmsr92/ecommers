@@ -31,6 +31,10 @@ from utils.ui_components import (
 )
 from utils.filtros import crear_filtros_sidebar, aplicar_filtros
 from utils.data_loader_pg import load_or_generate_data
+from utils.traducciones import obtener_labels_profesionales
+
+# Labels profesionales para gráficos
+LABELS = obtener_labels_profesionales()
 
 # Aplicar estilos globales con detección automática de tema del navegador
 aplicar_estilos_globales()
@@ -348,7 +352,7 @@ with tab_overview:
             y='country',
             orientation='h',
             title='Top 10 Países por Ingresos',
-            labels={'total_amount_usd': 'Ingresos (USD)', 'country': 'País'},
+            labels=LABELS,
             color='total_amount_usd',
             color_continuous_scale='Viridis'
         )
@@ -358,6 +362,7 @@ with tab_overview:
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)'
         )
+        fig_paises.update_traces(hovertemplate='<b>%{y}</b><br>Ingresos: $%{x:,.0f}<extra></extra>')
         st.plotly_chart(fig_paises, use_container_width=True)
     
     with col_dist2:
@@ -375,7 +380,11 @@ with tab_overview:
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)'
         )
-        fig_categorias.update_traces(textposition='inside', textinfo='percent+label')
+        fig_categorias.update_traces(
+            textposition='inside', 
+            textinfo='percent+label',
+            hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<br>Porcentaje: %{percent}<extra></extra>'
+        )
         st.plotly_chart(fig_categorias, use_container_width=True)
 
 with tab_geografia:
@@ -429,8 +438,10 @@ with tab_geografia:
             orientation='h',
             color='ingresos',
             color_continuous_scale='Blues',
-            title='Ingresos por País (Top 15)'
+            title='Ingresos por País (Top 15)',
+            labels=LABELS
         )
+        fig_top.update_traces(hovertemplate='<b>%{y}</b><br>Ingresos: $%{x:,.0f}<extra></extra>')
         fig_top.update_layout(
             height=500,
             showlegend=False,
@@ -645,11 +656,12 @@ with tab_forecasting:
             x='dia_semana',
             y='total_amount_usd',
             title='Ingresos por Día de la Semana',
-            labels={'dia_semana': 'Día', 'total_amount_usd': 'Ingresos (USD)'},
+            labels=LABELS,
             color='total_amount_usd',
             color_continuous_scale='Viridis'
         )
         fig_dias.update_layout(height=400, showlegend=False)
+        fig_dias.update_traces(hovertemplate='<b>%{x}</b><br>Ingresos: $%{y:,.0f}<extra></extra>')
         st.plotly_chart(fig_dias, use_container_width=True)
     
     with col_dist2:
@@ -662,10 +674,14 @@ with tab_forecasting:
             x='hora',
             y='total_amount_usd',
             title='Ingresos por Hora del Día',
-            labels={'hora': 'Hora', 'total_amount_usd': 'Ingresos (USD)'},
+            labels=LABELS,
             markers=True
         )
-        fig_horas.update_traces(line_color='#F59E0B', line_width=3)
+        fig_horas.update_traces(
+            line_color='#F59E0B', 
+            line_width=3,
+            hovertemplate='<b>Hora %{x}:00</b><br>Ingresos: $%{y:,.0f}<extra></extra>'
+        )
         fig_horas.update_layout(height=400)
         st.plotly_chart(fig_horas, use_container_width=True)
 
@@ -694,7 +710,7 @@ with tab_productos:
         y='product_name',
         orientation='h',
         title='Top 20 Productos por Ingresos',
-        labels={'total_amount_usd': 'Ingresos (USD)', 'product_name': 'Producto'},
+        labels=LABELS,
         color='profit',
         color_continuous_scale='RdYlGn'
     )
@@ -740,7 +756,7 @@ with tab_productos:
             x='category',
             y='margen_%',
             title='Margen de Beneficio por Categoría (%)',
-            labels={'category': 'Categoría', 'margen_%': 'Margen (%)'},
+            labels=LABELS,
             color='margen_%',
             color_continuous_scale='RdYlGn'
         )
@@ -781,7 +797,7 @@ with tab_productos:
         size='ingresos',
         hover_data={'producto': True, 'ingresos_formato': True, 'frecuencia': True, 'ingresos': False, 'cuadrante': False},
         title='Matriz BCG de Productos',
-        labels={'frecuencia': 'Frecuencia de Compra', 'ingresos': 'Ingresos (USD)', 'cuadrante': 'Cuadrante', 'producto': 'Producto'},
+        labels=LABELS,
         color_discrete_map={
             'Estrellas': '#10B981',
             'Vacas Lecheras': '#3B82F6',
@@ -830,7 +846,7 @@ with tab_clientes:
             x='segmento',
             y='cantidad',
             title='Distribución de Clientes por Segmento RFM',
-            labels={'segmento': 'Segmento RFM', 'cantidad': 'Cantidad de Clientes'},
+            labels=LABELS,
             color='cantidad',
             color_continuous_scale='Viridis'
         )
@@ -864,7 +880,7 @@ with tab_clientes:
         x='lifetime_value',
         nbins=50,
         title='Distribución del Valor de Vida del Cliente',
-        labels={'lifetime_value': 'Valor de Vida (USD)', 'count': 'Frecuencia'},
+        labels=LABELS,
         color_discrete_sequence=['#667eea']
     )
     fig_ltv_dist.update_layout(height=400, showlegend=False)
@@ -1051,7 +1067,7 @@ with tab_clientes:
             x='churn_probability',
             nbins=30,
             title='Distribución de Probabilidad de Churn',
-            labels={'churn_probability': 'Probabilidad de Churn (%)', 'count': 'Cantidad de Clientes'},
+            labels=LABELS,
             color_discrete_sequence=['#EF4444']
         )
         fig_churn.update_layout(height=400)
@@ -1136,7 +1152,7 @@ with tab_canal:
             x='traffic_source',
             y='total_amount_usd',
             title='Ingresos por Fuente de Tráfico',
-            labels={'traffic_source': 'Fuente', 'total_amount_usd': 'Ingresos (USD)'},
+            labels=LABELS,
             color='total_amount_usd',
             color_continuous_scale='Viridis'
         )
@@ -1156,7 +1172,7 @@ with tab_canal:
         x='metodo',
         y='ingresos',
         title='Ingresos por Método de Pago',
-        labels={'metodo': 'Método de Pago', 'ingresos': 'Ingresos (USD)'},
+        labels=LABELS,
         color='ingresos',
         color_continuous_scale='Blues',
         text='transacciones'
@@ -1237,7 +1253,7 @@ with tab_ml:
                         y='total_amount_usd',
                         color='es_anomalia',
                         title='Detección de Transacciones Anómalas',
-                        labels={'quantity': 'Cantidad', 'total_amount_usd': 'Monto (USD)', 'es_anomalia': 'Anomalía'},
+                        labels=LABELS,
                         color_discrete_map={True: '#EF4444', False: '#10B981'}
                     )
                     fig_anomalias.update_layout(height=500)
@@ -1291,7 +1307,7 @@ with tab_ml:
                 y='producto',
                 orientation='h',
                 title='Top 15 Productos Más Comprados (Base para Recomendaciones)',
-                labels={'producto': 'Producto', 'frecuencia': 'Frecuencia de Compra'},
+                labels=LABELS,
                 color='frecuencia',
                 color_continuous_scale='Viridis'
             )
@@ -1373,7 +1389,7 @@ with tab_finanzas:
             x='category',
             y='margen_%',
             title='Margen de Beneficio por Categoría',
-            labels={'category': 'Categoría', 'margen_%': 'Margen (%)'},
+            labels=LABELS,
             color='margen_%',
             color_continuous_scale='RdYlGn'
         )
@@ -1391,7 +1407,7 @@ with tab_finanzas:
             x='mes',
             y='profit',
             title='Beneficio Mensual',
-            labels={'mes': 'Mes', 'profit': 'Beneficio (USD)'},
+            labels=LABELS,
             markers=True
         )
         fig_beneficio.update_traces(line_color='#10B981', line_width=3)
@@ -1462,7 +1478,7 @@ with tab_operacional:
             x='dia_semana',
             y='transaction_id',
             title='Distribución de Pedidos por Día',
-            labels={'dia_semana': 'Día', 'transaction_id': 'Pedidos'},
+            labels=LABELS,
             color='transaction_id',
             color_continuous_scale='Blues'
         )
@@ -1477,7 +1493,7 @@ with tab_operacional:
             cantidades_pedido,
             nbins=30,
             title='Histograma de Unidades por Pedido',
-            labels={'value': 'Unidades por Pedido', 'count': 'Frecuencia'},
+            labels=LABELS,
             color_discrete_sequence=['#667eea']
         )
         fig_cantidad.update_layout(height=400, showlegend=False)
@@ -1539,7 +1555,7 @@ with tab_operacional:
         y='producto',
         orientation='h',
         title='Top 15 Productos por Velocidad de Rotación',
-        labels={'producto': 'Producto', 'velocidad': 'Índice de Rotación'},
+        labels=LABELS,
         color='unidades_vendidas',
         color_continuous_scale='Viridis'
     )
