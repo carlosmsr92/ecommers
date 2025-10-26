@@ -496,20 +496,21 @@ with tab_geografia:
         datos_tree_geo = datos_filtrados.groupby(['country', 'category']).agg({
             'total_amount_usd': 'sum'
         }).reset_index()
+        datos_tree_geo.rename(columns={'total_amount_usd': 'ingresos'}, inplace=True)
         
         fig_tree = px.treemap(
             datos_tree_geo,
             path=['country', 'category'],
-            values='total_amount_usd',
-            color='total_amount_usd',
+            values='ingresos',
+            color='ingresos',
             color_continuous_scale='RdYlGn',
             title='Jerarquía: País → Categoría'
         )
         
         fig_tree.update_traces(
-            hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<extra></extra>',
-            textinfo='label',
-            texttemplate='<b>%{label}</b>'
+            textinfo='label+value',
+            texttemplate='<b>%{label}</b><br>$%{value:,.0f}',
+            hovertemplate='<b>%{label}</b><br>Ingresos: $%{value:,.0f}<extra></extra>'
         )
         
         fig_tree.update_layout(height=400)
@@ -592,6 +593,13 @@ with tab_forecasting:
     
     if filtros.get('mostrar_ml') and len(serie_temporal) > 10:
         st.subheader("🔮 Forecasting 90 Días (Prophet)")
+        
+        st.info(
+            "📊 **¿Qué proyecta este modelo?** Este gráfico muestra la predicción de **INGRESOS TOTALES** de tu negocio "
+            f"para los próximos 90 días, agregados por **{granularidad.lower()}**. "
+            "La línea verde es la predicción basada en patrones históricos, y la banda sombreada muestra el rango de confianza del 95%. "
+            "El modelo detecta automáticamente tendencias, estacionalidad semanal, mensual y anual en tus ventas."
+        )
         
         try:
             from prophet import Prophet
@@ -1518,21 +1526,77 @@ with tab_finanzas:
         temp_df['mes'] = temp_df['date'].dt.to_period('M').dt.start_time
         beneficio_mensual = temp_df.groupby('mes')['profit'].sum().reset_index()
         
-        fig_beneficio = px.line(
-            beneficio_mensual,
-            x='mes',
-            y='profit',
-            title='Beneficio Mensual',
-            labels=LABELS,
-            markers=True
-        )
-        fig_beneficio.update_traces(
-            line_color='#10B981', 
-            line_width=3,
+        # Calcular tendencia y proyección (próximos 3 meses)
+        mostrar_proyeccion = len(beneficio_mensual) >= 3
+        if mostrar_proyeccion:
+            beneficio_mensual['mes_num'] = np.arange(len(beneficio_mensual))
+            z = np.polyfit(beneficio_mensual['mes_num'], beneficio_mensual['profit'], 1)
+            p = np.poly1d(z)
+            beneficio_mensual['tendencia'] = p(beneficio_mensual['mes_num'])
+            
+            # Proyección de 3 meses futuros
+            meses_futuros = 3
+            ultimo_mes = beneficio_mensual['mes'].max()
+            proyeccion_data = []
+            for i in range(1, meses_futuros + 1):
+                mes_futuro = ultimo_mes + pd.DateOffset(months=i)
+                valor_proyectado = p(len(beneficio_mensual) + i - 1)
+                proyeccion_data.append({'mes': mes_futuro, 'proyeccion': max(0, valor_proyectado)})
+            proyeccion_df = pd.DataFrame(proyeccion_data)
+        
+        fig_beneficio = go.Figure()
+        
+        # Datos históricos
+        fig_beneficio.add_trace(go.Scatter(
+            x=beneficio_mensual['mes'],
+            y=beneficio_mensual['profit'],
+            mode='lines+markers',
+            name='Beneficio Real',
+            line=dict(color='#10B981', width=3),
             hovertemplate='<b>%{x}</b><br>Beneficio: $%{y:,.0f}<extra></extra>'
+        ))
+        
+        # Línea de tendencia
+        if mostrar_proyeccion:
+            fig_beneficio.add_trace(go.Scatter(
+                x=beneficio_mensual['mes'],
+                y=beneficio_mensual['tendencia'],
+                mode='lines',
+                name='Tendencia',
+                line=dict(color='#667eea', width=2, dash='dash'),
+                hovertemplate='<b>%{x}</b><br>Tendencia: $%{y:,.0f}<extra></extra>'
+            ))
+            
+            # Proyección futura
+            fig_beneficio.add_trace(go.Scatter(
+                x=proyeccion_df['mes'],
+                y=proyeccion_df['proyeccion'],
+                mode='lines+markers',
+                name='Proyección (3 meses)',
+                line=dict(color='#F59E0B', width=2, dash='dot'),
+                marker=dict(symbol='diamond', size=8),
+                hovertemplate='<b>%{x}</b><br>Proyección: $%{y:,.0f}<extra></extra>'
+            ))
+        
+        fig_beneficio.update_layout(
+            title='Beneficio Mensual con Proyección',
+            xaxis_title='Mes',
+            yaxis_title='Beneficio (USD)',
+            height=400,
+            hovermode='x unified',
+            showlegend=True
         )
-        fig_beneficio.update_layout(height=400)
         st.plotly_chart(fig_beneficio, use_container_width=True)
+        
+        # Mostrar insight sobre la tendencia
+        if mostrar_proyeccion:
+            pendiente = z[0]
+            if pendiente > 0:
+                st.success(f"📈 **Tendencia positiva:** El beneficio crece aproximadamente ${pendiente:,.0f}/mes. Si se mantiene, proyectamos ${proyeccion_df['proyeccion'].iloc[-1]:,.0f} en 3 meses.")
+            elif pendiente < 0:
+                st.warning(f"📉 **Tendencia negativa:** El beneficio decrece aproximadamente ${abs(pendiente):,.0f}/mes. Requiere atención.")
+            else:
+                st.info("📊 **Tendencia estable:** El beneficio se mantiene relativamente constante.")
     
     st.subheader("Métricas Financieras Avanzadas")
     

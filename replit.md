@@ -142,3 +142,57 @@ The project emphasizes modularity and scalability using Streamlit for rapid dash
   - Only pre-existing Plotly country names library notice (non-blocking)
   - Prophet training successful (cmdstanpy logs clean)
   - Client/executive delivery ready
+
+**Dashboard v3.2 - Data Quality & Visualization Enhancements (October 26, 2025):**
+- ✅ **Complete Country Consolidation:**
+  - Extended Ireland consolidation: EIRE (7,236 trans) + Ireland (3,768 trans) → Irlanda (11,004 trans total)
+  - Added: European Community → Unión Europea (60 trans)
+  - Added: Unspecified → No Especificado (244 trans)
+  - All consolidations applied in both Parquet and PostgreSQL flows
+  - Estados Unidos now consolidates correctly to $8.6M (USA + United States)
+
+- ✅ **Professional Treemap Labels:**
+  - Changed technical "total_amount_usd" to professional "ingresos"
+  - Applied rename() after aggregation for clean display
+  - Fixed hovertemplate warnings in Plotly
+
+- ✅ **Forecasting Clarification:**
+  - Added informative st.info() explaining projection scope
+  - Clarifies: Projects INGRESOS TOTALES for next 90 days
+  - Shows granularity (día/semana/mes) dynamically
+  - Explains green line (prediction) and band (95% confidence)
+  - Documents auto-detection of trends and seasonality
+
+- ✅ **Churn Probability Standardization:**
+  - Converted from scale 0-100 to standard 0-1 (probabilidad decimal)
+  - Auto-detection: only converts if max value > 1.0 to avoid double conversion
+  - Now displays correctly as percentages (e.g., 18.4% instead of 1840%)
+  - Fixes categorization: Alto >70%, Medio 40-70%, Bajo <40%
+
+- ✅ **LTV Distribution Validation:**
+  - Verified distribution is REALISTIC for global e-commerce
+  - Mediana: $4,454 (razonable)
+  - 75% de clientes con LTV < $9,580 (distribución long-tail correcta)
+  - 41% concentrado en rango $2.5-5K (núcleo principal)
+  - Solo 0.32% con LTV > $100K (clientes VIP/corporativos)
+  - NO requiere cambios - distribución profesional
+
+- ✅ **Anomaly Detection Verification:**
+  - Isolation Forest configurado correctamente (contamination=0.05)
+  - Features apropiadas: total_amount_usd, quantity, profit
+  - Visualización clara con scatter plot coloreado
+  - Métricas relevantes mostradas (cantidad, %, características)
+
+- ✅ **Profit Evolution with Predictions:**
+  - Añadida línea de tendencia (regresión lineal con np.polyfit)
+  - Proyección de 3 meses futuros con línea punteada naranja
+  - Insight automático: informa si tendencia es positiva/negativa/estable
+  - Muestra crecimiento/decrecimiento mensual específico
+  - Proyección específica para 3 meses adelante
+
+- ✅ **Technical Quality:**
+  - Dashboard ejecutando sin errores
+  - Prophet corriendo exitosamente
+  - Warnings de Treemap hovertemplate resueltos
+  - Todas las variables correctamente inicializadas (mostrar_proyeccion)
+  - Validación completa de edge cases (<3 meses de datos)

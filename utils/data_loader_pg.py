@@ -51,14 +51,20 @@ def load_data_from_postgres():
             transactions_df['country'] = transactions_df['country'].replace({
                 'USA': 'Estados Unidos',
                 'EIRE': 'Irlanda',
+                'Ireland': 'Irlanda',
                 'RSA': 'Sudáfrica',
-                'Channel Islands': 'Reino Unido'
+                'Channel Islands': 'Reino Unido',
+                'European Community': 'Unión Europea',
+                'Unspecified': 'No Especificado'
             })
             customers_df['country'] = customers_df['country'].replace({
                 'USA': 'Estados Unidos',
                 'EIRE': 'Irlanda',
+                'Ireland': 'Irlanda',
                 'RSA': 'Sudáfrica',
-                'Channel Islands': 'Reino Unido'
+                'Channel Islands': 'Reino Unido',
+                'European Community': 'Unión Europea',
+                'Unspecified': 'No Especificado'
             })
             
             # Traducir segmentos RFM al español
@@ -82,6 +88,12 @@ def load_data_from_postgres():
                 transactions_df = aplicar_traducciones_segmentos_clientes_df(transactions_df, 'customer_segment')
             if 'customer_segment' in customers_df.columns:
                 customers_df = aplicar_traducciones_segmentos_clientes_df(customers_df, 'customer_segment')
+            
+            # Convertir churn_probability de escala 0-100 a escala 0-1 estándar
+            if 'churn_probability' in customers_df.columns:
+                # Si los valores están en rango 0-100, convertir a 0-1
+                if customers_df['churn_probability'].max() > 1.0:
+                    customers_df['churn_probability'] = customers_df['churn_probability'] / 100.0
             
             return transactions_df, customers_df, products_df
             
@@ -123,14 +135,20 @@ def load_data_from_postgres():
         transactions_df['country'] = transactions_df['country'].replace({
             'USA': 'Estados Unidos',
             'EIRE': 'Irlanda',
+            'Ireland': 'Irlanda',
             'RSA': 'Sudáfrica',
-            'Channel Islands': 'Reino Unido'
+            'Channel Islands': 'Reino Unido',
+            'European Community': 'Unión Europea',
+            'Unspecified': 'No Especificado'
         })
         customers_df['country'] = customers_df['country'].replace({
             'USA': 'Estados Unidos',
             'EIRE': 'Irlanda',
+            'Ireland': 'Irlanda',
             'RSA': 'Sudáfrica',
-            'Channel Islands': 'Reino Unido'
+            'Channel Islands': 'Reino Unido',
+            'European Community': 'Unión Europea',
+            'Unspecified': 'No Especificado'
         })
         
         # Traducir segmentos RFM al español
@@ -154,6 +172,12 @@ def load_data_from_postgres():
             transactions_df = aplicar_traducciones_segmentos_clientes_df(transactions_df, 'customer_segment')
         if 'customer_segment' in customers_df.columns:
             customers_df = aplicar_traducciones_segmentos_clientes_df(customers_df, 'customer_segment')
+        
+        # Convertir churn_probability de escala 0-100 a escala 0-1 estándar
+        if 'churn_probability' in customers_df.columns:
+            # Si los valores están en rango 0-100, convertir a 0-1
+            if customers_df['churn_probability'].max() > 1.0:
+                customers_df['churn_probability'] = customers_df['churn_probability'] / 100.0
         
         return transactions_df, customers_df, products_df
         
