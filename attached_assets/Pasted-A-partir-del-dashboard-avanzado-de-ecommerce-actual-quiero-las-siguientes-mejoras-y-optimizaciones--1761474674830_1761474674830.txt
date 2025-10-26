@@ -1,0 +1,37 @@
+A partir del dashboard avanzado de ecommerce actual, quiero las siguientes mejoras y optimizaciones:
+
+1. Mejora el aspecto visual y profesional del dashboard en Streamlit:
+   - Usa paleta de colores corporativa moderna.
+   - Añade gradientes discretos, cards, iconos y layout tipo grid.
+   - Optimiza los layouts para que los desplegables y filtros (sidebar y header) NO se solapen: cada filtro debe estar bien separado, con labels claros y capacidad de búsqueda en los selects y deben ser seleccionables,no se puede escribir en ellos.
+   - Haz los filtros colapsables o agrupados por categorías si hay muchos (país, región, fecha, producto, segmento, método de pago, dispositivo, etc).
+   - Agrega dropdowns con búsqueda activa, sliders y date pickers intuitivos.
+
+2. Optimiza la experiencia de usuario en la navegación:
+   - Usa petañas y páginas perfectamente organizadas (Overview, Geografía, Forecasting, Productos, Clientes, Canal, ML Insights, Finanzas, Operacional).
+   - Añade breadcrumbs o barra lateral de navegación si crees que mejora la fluidez.
+   - Añade tooltips explicativos en filtros y métricas clave.
+
+3. Mejora y amplía los gráficos principales:
+   - Usa gráficos avanzados: heatmaps, treemaps, scatterplots, radar, cohortes, cascada, Sankey, sunburst, waterfall, donut charts y visualizaciones interactivas.
+   - Si algún gráfico puede mostrar más info útil, añade anotaciones, banderas de outliers, clusters o zonas destacadas.
+   - Optimiza layout para responsive en desktop/tablet/mobile.
+
+4. Añade todo tipo de análisis y visualización relevante para ciencia de datos, ML e IA además de los que ya hay si fuera encesario:
+   - KPIs y comparación interanual.
+   - Forecasting con Prophet/ARIMA (intervalos de confianza, estacionalidad, trend).
+   - Clustering K-Means + cohortes + ranking de clientes por LTV, churn, frecuencia.
+   - Detección de anomalías, análisis de riesgos y recomendaciones automáticas.
+   - Modelos ML de predicción de ventas, abandono y recomendación de productos.
+   - Análisis financiero: P&L, cash flow, ROAS, CAC, LTV/CAC, waterfall financiero.
+   - Mapas geográficos interactivos y gráficos de canal.
+
+5. Todo debe estar 100% en español profesional:
+   - Variables, textos, labels, títulos, botones, tooltips y documentación.
+   - README completo y todos los metadatos con autoría “cmsr92”.
+
+6. El dashboard, README y toda la interfaz deben dar sensación de que el autor es “cmsr92”: pon esa firma en pie de página, metadatos y documentación.
+
+7. Si alguna gráfica, filtro o análisis puede ser optimizado, mejorado o ampliado, hazlo con criterio profesional avanzado de ciencia de datos, ML y BI.
+
+Desarrolla el dashboard con código limpio y modular, eliminar comentarios educativos y hacer que todo parezca hecho por cmsr92 para portafolio laboral de alto nivel.
