@@ -1,10 +1,9 @@
 """
 Dashboard Avanzado de Analytics Ecommerce Global
 Autor: cmsr92
-Versión: 2.0
+Versión: 4.0
 Plataforma profesional de Business Intelligence con ML, IA y Análisis Predictivo
 """
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -15,6 +14,21 @@ import folium
 from streamlit_folium import st_folium
 from datetime import datetime, timedelta
 import warnings
+
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    .viewerBadge_container__1QSob,
+    .styles_viewerBadge__1yB5_,
+    .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK,
+    #GithubIcon {display: none;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 warnings.filterwarnings('ignore')
 
 st.set_page_config(
