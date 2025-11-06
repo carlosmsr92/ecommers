@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Replit specific
+.replit
+.config/
+.cache/
+.upm/
+replit.nix
+
+# Development files
+pyproject.toml
+uv.lock
+.breakpoints
+
+# Logs
+*.log
+/tmp/
+
+# Temporary assets
+attached_assets/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
